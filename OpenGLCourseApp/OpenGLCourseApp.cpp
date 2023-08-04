@@ -33,11 +33,8 @@ float minSize = 0.1f;
 float sizeIncrement = 0.001f;
 
 // Vertex shaders
-
 static const char* vShader = "Shaders/shader.vert.txt";
-
 // Fragment Shader
-
 static const char* fShader = "Shaders/shader.frag.txt";
 
 void CreateObjects()
@@ -46,7 +43,7 @@ void CreateObjects()
 	unsigned int indices[numberOfindices]
 	{
 	    0,1,3,
-            1,3,2,
+        1,3,2,
 	    2,3,0,
 	    0,1,2
 	};
