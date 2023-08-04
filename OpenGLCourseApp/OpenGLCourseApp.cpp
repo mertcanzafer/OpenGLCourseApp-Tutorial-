@@ -11,15 +11,13 @@
 #include<glm\gtc\type_ptr.hpp>
 
 #include "Mesh.h"
+#include "Shader.h"
 
 const GLint width = 800, height = 600;
 const float toRadians = 3.14159265f / 180.0f;
 
 std::vector<MNS::Mesh*> meshList; // The vector list that holds mesh objects
-
-GLuint shader;
-GLuint uniformModel;  // An uniform value how much moved coordinates along the x axis.
-GLuint uniformProjection; // The variable that holds id and location for projection in vertex shader.
+std::vector<SNS::Shader*> shaderList; // The vector list that holds shader objects
 
 bool Direction = true;
 float tryOffset = 0.0f;
@@ -36,37 +34,13 @@ float sizeIncrement = 0.001f;
 
 // Vertex shaders
 
-static const char* vShader = "                                \n\
-#version 330                                                  \n\
-                                                              \n\
-uniform mat4 model;                                           \n\
-uniform mat4 projection;                                      \n\
-                                                              \n\
-layout (location = 0) in vec3 pos;                            \n\
-                                                              \n\
-out vec4 vColor;	                                          \n\
-	                                                          \n\
-void main()                                                   \n\
-{                                                             \n\
-	gl_Position = projection * model * vec4(pos, 1.0);        \n\
-    vColor = vec4(clamp(pos,0.0f,1.0f),1.0f);                 \n\
-}";
+static const char* vShader = "Shaders/shader.vert.txt";
 
 // Fragment Shader
 
-static const char* fShader = "                                \n\
-#version 330                                                  \n\
-                                                              \n\
-in vec4 vColor;                                               \n\
-                                                              \n\
-out vec4 color;                                               \n\
-                                                              \n\
-void main()                                                   \n\
-{                                                             \n\
-	color = vColor;                                           \n\
-}";
+static const char* fShader = "Shaders/shader.frag.txt";
 
-void CreateTriangle()
+void CreateObjects()
 {  
 	const int numberOfindices{ 12 }, numberOfvertices{ 12 };
 	unsigned int indices[numberOfindices]
@@ -97,76 +71,12 @@ void CreateTriangle()
 
 }
 
-// Implement Shaders or Apply them
-
-void AddShader(GLuint *theProgram, const char* shaderCode, GLenum shaderType)
+void CreateShaders()
 {
-	GLuint theShader = glCreateShader(shaderType);
-
-	const GLchar* theCode[1]{};
-	theCode[0] = shaderCode;
-
-	GLint codeLength[1]{};
-	codeLength[0] = strlen(shaderCode);
-
-	glShaderSource(theShader, 1, theCode, codeLength);
-
-	glCompileShader(theShader);
-
-	GLint result = 0;
-	GLchar elog[1024] = { 0 };
-
- 	glGetShaderiv(theShader, GL_COMPILE_STATUS, &result);
-
-	if (!result)
-	{
-		glGetShaderInfoLog(theShader, sizeof(elog), NULL, elog);
-		std::cout << "Error compiling the " << shaderType << " shader: " << elog << std::endl;
-		return;
-	}
-	glAttachShader(*theProgram, theShader);
+	SNS::Shader* shader1 = new SNS::Shader();
+	shader1->CreateFromFiles(vShader, fShader);
+	shaderList.push_back(shader1);
 }
-
-
-void CompileShaders()
-{
-	shader = glCreateProgram();
-
-	if (!shader)
-	{
-		std::cout << "Error creating shader program" << std::endl;
-		return;
-	}
-	AddShader(&shader, vShader, GL_VERTEX_SHADER);
-	AddShader(&shader, fShader, GL_FRAGMENT_SHADER);
-
-	GLint result = 0;
-	GLchar elog[1024] = { 0 };
-
-	glLinkProgram(shader);
-	glGetProgramiv(shader, GL_LINK_STATUS, &result);
-	
-	if (!result)
-	{
-		glGetProgramInfoLog(shader, sizeof(elog), NULL, elog);
-		std::cout << "Error linking program  " << elog << std::endl;
-		return;
-	}
-	// Validating our program. Remember That's really important in OpenGL Apps
-	glValidateProgram(shader);
-	glGetProgramiv(shader, GL_VALIDATE_STATUS, &result);
-
-	if (!result)
-	{
-		glGetProgramInfoLog(shader, sizeof(elog), NULL, elog);
-		std::cout << "Error validating program  " << elog << std::endl;
-		return;
-	}
-
-	uniformModel = glGetUniformLocation(shader, "model");
-	uniformProjection = glGetUniformLocation(shader, "projection");
-}
-
 
 
 int main()
@@ -221,9 +131,10 @@ int main()
 	// Setup Viewport size
 	glViewport(0, 0, buffersizeWidth, buffersizeHeight);
 
-	CreateTriangle();
-	CompileShaders();
+	CreateObjects();
+	CreateShaders();
 
+	GLuint uniformModel{ 0 }, uniformProjection{ 0 };
 	// Create the perspective projection outside the main loop
 	glm::mat4 projection = glm::perspective(45.0f, static_cast<GLfloat>(buffersizeWidth) / static_cast<GLfloat>(buffersizeHeight), 0.1f, 100.0f);
 
@@ -269,7 +180,9 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glUseProgram(shader);
+		shaderList[0]->UseShader();
+		uniformModel = shaderList[0]->GetModelLocation();
+		uniformProjection = shaderList[0]->GetProjectionLocation();
 
 		glm::mat4 model(1.0f);   	
 		model = glm::translate(model, glm::vec3(tryOffset, 0.0f, -2.5f));
