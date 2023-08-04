@@ -10,27 +10,15 @@
 #include<glm\gtc\matrix_transform.hpp>
 #include<glm\gtc\type_ptr.hpp>
 
+#include "Window.h"
 #include "Mesh.h"
 #include "Shader.h"
 
-const GLint width = 800, height = 600;
 const float toRadians = 3.14159265f / 180.0f;
 
+WNS::Window mainWindow; // Our simply window object
 std::vector<MNS::Mesh*> meshList; // The vector list that holds mesh objects
 std::vector<SNS::Shader*> shaderList; // The vector list that holds shader objects
-
-bool Direction = true;
-float tryOffset = 0.0f;
-float tryMaxOffset = 0.7f;
-float tryIncrement = 0.0012f;
-
-float curAngle = 0.0f;
-
-bool sizeDirection = true;
-float curSize = 0.4f;
-float maxSize = 0.8f;
-float minSize = 0.1f;
-float sizeIncrement = 0.001f;
 
 // Vertex shaders
 static const char* vShader = "Shaders/shader.vert.txt";
@@ -75,102 +63,24 @@ void CreateShaders()
 	shaderList.push_back(shader1);
 }
 
-
 int main()
 {
-
-	if (!glfwInit())
-	{
-		std::cout << "GLFW initialisation failed!" << std::endl;
-		glfwTerminate();
-		return 1;
-	}
-	// Setup GLFW window properties
-	// OpenGL version
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	// Set the profile
-	// Core Profile = No Backwards Compatibility
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	// Allow Forward Compatbility
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT,GL_TRUE);
-
-	// Creating our window...
-
-	GLFWwindow* MainWindow = glfwCreateWindow(width,height,"3D Game Engine",NULL,NULL);
-	if (!MainWindow)
-	{
-		std::cout << "GLFW window creation failed!"<<std::endl;
-		glfwTerminate();
-		return 1;
-	}
-
-	// Get buffer size Info.
-	int buffersizeHeight,buffersizeWidth;
-	glfwGetFramebufferSize(MainWindow, &buffersizeWidth, &buffersizeHeight);
-
-	// Set the context for GLEW to use
-	glfwMakeContextCurrent(MainWindow);
-
-	// Allow modern extension features
-	glewExperimental = GL_TRUE;
-
-	if (glewInit() != GLEW_OK)
-	{
-		std::cout << "GLEW initialisation failed!"<<std::endl;
-		glfwDestroyWindow(MainWindow);
-		glfwTerminate();
-		return 1;
-	}
-
-	glEnable(GL_DEPTH_TEST);
-
-	// Setup Viewport size
-	glViewport(0, 0, buffersizeWidth, buffersizeHeight);
+	mainWindow = WNS::Window(800,600);
+	mainWindow.Initialise();
 
 	CreateObjects();
 	CreateShaders();
 
 	GLuint uniformModel{ 0 }, uniformProjection{ 0 };
 	// Create the perspective projection outside the main loop
-	glm::mat4 projection = glm::perspective(45.0f, static_cast<GLfloat>(buffersizeWidth) / static_cast<GLfloat>(buffersizeHeight), 0.1f, 100.0f);
-
+	glm::mat4 projection = glm::perspective(45.0f, mainWindow.GetbufferWidth() / mainWindow.GetbufferHeight(), 0.1f, 100.0f);
 
 	// Loop until window closed.
 
-	while (!glfwWindowShouldClose(MainWindow))
+	while (!mainWindow.getShouldClose())
 	{
 		// Get + Handle user input events
 		glfwPollEvents();
-
-		if (Direction)
-		{
-			tryOffset += tryIncrement;
-		}
-		else {
-			tryOffset -= tryIncrement;
-		}
-
-		if (abs(tryOffset) >= tryMaxOffset) {
-			
-			Direction = !Direction;
-		}
-
-		curAngle += 0.045f;
-
-		if (curAngle >= 360.0f) {
-			curAngle -= 360.0f;
-		}
-		
-		if (sizeDirection) {
-			curSize += sizeIncrement;
-		}
-		else {
-			curSize -= sizeIncrement;
-		}
-
-		if (curSize >= maxSize || curSize <= minSize)
-			sizeDirection = !sizeDirection;
 
 		// Clear Window
 
@@ -182,7 +92,7 @@ int main()
 		uniformProjection = shaderList[0]->GetProjectionLocation();
 
 		glm::mat4 model(1.0f);   	
-		model = glm::translate(model, glm::vec3(tryOffset, 0.0f, -2.5f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));
 		//model = glm::rotate(model, curAngle * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));  //-> curSize * x,curSize * y, 1 * z
 		glUniformMatrix4fv(uniformModel,1,GL_FALSE,glm::value_ptr(model));
@@ -191,14 +101,14 @@ int main()
 		meshList[0]->RenderMesh();
 
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(-tryOffset, 1.0f, -2.5f));
+		model = glm::translate(model, glm::vec3(0.0f, 1.0f, -2.5f));
 		model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		
 		meshList[1]->RenderMesh();
 
 		glUseProgram(0);
-		glfwSwapBuffers(MainWindow);
+		mainWindow.swapBuffers();
 	}
 
 	return 0;
