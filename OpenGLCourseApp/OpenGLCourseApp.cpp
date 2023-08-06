@@ -28,30 +28,41 @@ static const char* fShader = "Shaders/shader.frag.txt";
 void CreateObjects()
 {  
 	const int numberOfindices{ 12 }, numberOfvertices{ 12 };
-	unsigned int indices[numberOfindices]
+
+    struct Indices
 	{
-	    0,1,3,
-        1,3,2,
-	    2,3,0,
-	    0,1,2
+		unsigned int indices[numberOfindices]
+		{
+			0,1,3,
+			1,3,2,
+			2,3,0,
+			0,1,2
+		};
 	};
 
-	GLfloat vertices[numberOfvertices]
+    struct Vertices
 	{
-		-1.0f,-1.0f,0.0f,
-		0.0f,-1.0f,1.0f,
-		1.0f,-1.0f,0.0f,
-		0.0f,1.0f,0.0f
+		GLfloat vertices[numberOfvertices]
+		{
+			-1.0f,-1.0f,0.0f,
+			0.0f,-1.0f,1.0f,
+			1.0f,-1.0f,0.0f,
+			0.0f,1.0f,0.0f
+		};
 	};
+
+	// Vertices and Indices struct objects
+	Indices* Ind = new Indices;
+	Vertices* Vert = new Vertices;
 
 	// First Mesh obj
 	MNS::Mesh* mesh1 = new MNS::Mesh();
-	mesh1->CreateMesh(vertices,indices,numberOfvertices,numberOfindices);
+	mesh1->CreateMesh(Vert->vertices,Ind->indices,numberOfvertices,numberOfindices);
 	meshList.push_back(mesh1);
 
 	// Second Mesh obj
 	MNS::Mesh* mesh2 = new MNS::Mesh();
-	mesh2->CreateMesh(vertices, indices, numberOfvertices, numberOfindices);
+	mesh2->CreateMesh(Vert->vertices, Ind->indices, numberOfvertices, numberOfindices);
 	meshList.push_back(mesh2);
 
 }
