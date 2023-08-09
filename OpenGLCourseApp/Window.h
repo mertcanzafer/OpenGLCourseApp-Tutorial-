@@ -4,6 +4,8 @@
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
 
+#include <iomanip>
+
 namespace WNS 
 {
 	class Window
@@ -19,6 +21,12 @@ namespace WNS
 		 GLfloat GetbufferHeight() { return bufferHeight; }
 
 		 bool getShouldClose() { return glfwWindowShouldClose(MainWindow); }
+
+		 // getters for keys changes in corrd. X and Y
+		 bool* getKeys() { return keys; }
+		 GLfloat getXchange();
+		 GLfloat getYChange();
+
 		 void swapBuffers(){ glfwSwapBuffers(MainWindow); }
 
 		 ~Window();
@@ -28,6 +36,22 @@ namespace WNS
 		  GLFWwindow* MainWindow; // our window
 		  GLint width, height;
 		  GLint bufferWidth, bufferHeight; // Get buffer size Info.
+
+		  // Some important variables for controls keys on the keyboard and mause
+		  bool keys[1024]; // Range of ASCII code
+
+		  GLfloat lastX, lastY, xChange, yChange;
+		  /*
+		   lastX,lasty: to Measure the last coordiantes
+		   xChange, yChange: Calculate the change
+		  */
+
+		  bool MouseFirstMoved; 
+
+		  static void handleKeys(GLFWwindow* window,int key,int code,int action,int mode);
+		  static void handleMouse(GLFWwindow* window, double Xpos, double Ypos);
+
+		  void CreateCallBacks();
 
 	};
 
