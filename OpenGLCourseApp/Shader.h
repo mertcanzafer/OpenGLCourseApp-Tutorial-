@@ -23,6 +23,7 @@ namespace SNS
 
 		 GLuint GetProjectionLocation();
 		 GLuint GetModelLocation();
+		 GLuint GetViewLocation();
 
 		 void UseShader();
 		 void ClearShader();
@@ -34,9 +35,10 @@ namespace SNS
 		  /*
 		    UniformModel: An uniform value how much moved coordinates along the x axis.
 			UniformProjection: The variable that holds id and location for projection in vertex shader.
+			uniformView: for the camera
 		  */
 
-		 GLuint shaderID, uniformModel, uniformProjection; 
+		 GLuint shaderID, uniformModel, uniformProjection,uniformView; 
 
 		 void CompileShader(const char* vertexCode, const char* fragmentCode);
 		 void AddShader(GLuint* theProgram, const char* shaderCode, GLenum shaderType);

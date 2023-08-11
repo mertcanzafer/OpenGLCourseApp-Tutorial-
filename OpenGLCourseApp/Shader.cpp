@@ -3,9 +3,8 @@ using namespace SNS;
 
 Shader::Shader()
 	:
-	shaderID{0},uniformModel{0},uniformProjection{0}
+	shaderID{0},uniformModel{0},uniformProjection{0},uniformView{0}
 {
-
 }
 
 // Implement the all methods in shader.h class
@@ -92,6 +91,7 @@ void Shader::CompileShader
 
 	uniformModel = glGetUniformLocation(shaderID, "model");
 	uniformProjection = glGetUniformLocation(shaderID, "projection");
+	uniformView = glGetUniformLocation(shaderID, "view");
 }
 
 // Implement Shaders or Apply them
@@ -143,7 +143,7 @@ void Shader::ClearShader()
 		shaderID = 0;
 	}
 
-	uniformModel = uniformProjection = 0;
+	uniformModel = uniformProjection = uniformView = 0;
 }
 
 Shader::~Shader()
@@ -154,3 +154,4 @@ Shader::~Shader()
 // Getters
 GLuint Shader::GetModelLocation() { return uniformModel; }
 GLuint Shader::GetProjectionLocation() { return uniformProjection; }
+GLuint Shader::GetViewLocation() { return uniformView; }
