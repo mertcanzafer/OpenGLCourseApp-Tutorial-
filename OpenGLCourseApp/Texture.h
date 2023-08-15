@@ -12,7 +12,7 @@ namespace TNS
 	  public:
           
 		  Texture();
-		  Texture(char* fileLoc);
+		  Texture(const char* fileLoc);
 
 		  void loadTexture();
 		  void useTexture();
@@ -24,7 +24,7 @@ namespace TNS
 		  GLuint textureID;
 		  int width, height, bitDepth; // For the image we load in for the texture
 
-		  char* fileLocation;
+		  const char* fileLocation;
 
 	};
 

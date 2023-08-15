@@ -2,18 +2,16 @@
 using namespace TNS;
 
 Texture::Texture()
-	:textureID{0},width{0},height{0},bitDepth{0},fileLocation{nullptr}
-{
-}
+	:textureID{0},width{0},height{0},bitDepth{0},fileLocation{nullptr}{}
 
-Texture::Texture(char* fileLoc) :Texture()
+Texture::Texture(const char* fileLoc) :Texture()
 {
 	fileLocation = fileLoc;
 } 
 
 void Texture::loadTexture()
 {
-	unsigned char* textData = stbi_load(fileLocation, &width, &height, &bitDepth,0);
+    unsigned char* textData = stbi_load(fileLocation, &width, &height, &bitDepth,0);
 
 	// If there is no file location
 	if (!textData) { std::cout << "Failed to find: " << fileLocation << std::endl;  return; }
@@ -30,7 +28,7 @@ void Texture::loadTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	// If you have an issue with the texture itself just change RGBA <-> RGB
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	// Unbind the texture
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -38,7 +36,20 @@ void Texture::loadTexture()
 	stbi_image_free(textData);
 }
 
+void Texture::useTexture()
+{
+	glActiveTexture(GL_TEXTURE0); // Texture unit 0
+	glBindTexture(GL_TEXTURE_2D, textureID);
+}
+
+void Texture::clearTexture()
+{
+	glDeleteTextures(1, &textureID);
+	textureID = width = height = bitDepth = 0;
+	fileLocation = nullptr;
+}
+
 Texture::~Texture()
 {
-
+	clearTexture();
 }
