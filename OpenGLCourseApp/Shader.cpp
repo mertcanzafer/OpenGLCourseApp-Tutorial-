@@ -3,7 +3,7 @@ using namespace SNS;
 
 Shader::Shader()
 	:
-	shaderID{0},uniformModel{0},uniformProjection{0},uniformView{0}
+	shaderID{0},uniformModel{0},uniformProjection{0},uniformView{0},uniformAmbientIntensity{0},uniformAmbientColour{0}
 {
 }
 
@@ -92,6 +92,8 @@ void Shader::CompileShader
 	uniformModel = glGetUniformLocation(shaderID, "model");
 	uniformProjection = glGetUniformLocation(shaderID, "projection");
 	uniformView = glGetUniformLocation(shaderID, "view");
+	uniformAmbientColour = glGetUniformLocation(shaderID, "directionalLight.colour");
+	uniformAmbientIntensity = glGetUniformLocation(shaderID, "directionalLight.ambientIntensity");
 }
 
 // Implement Shaders or Apply them
@@ -143,7 +145,7 @@ void Shader::ClearShader()
 		shaderID = 0;
 	}
 
-	uniformModel = uniformProjection = uniformView = 0;
+	uniformModel = uniformProjection = uniformView = uniformAmbientIntensity = uniformAmbientColour = 0;
 }
 
 Shader::~Shader()
@@ -155,3 +157,5 @@ Shader::~Shader()
 GLuint Shader::GetModelLocation() { return uniformModel; }
 GLuint Shader::GetProjectionLocation() { return uniformProjection; }
 GLuint Shader::GetViewLocation() { return uniformView; }
+GLuint Shader::GetAmbientIntensityLocation() { return uniformAmbientIntensity; }
+GLuint Shader::GetAmbientColourLocation() { return uniformAmbientColour; }

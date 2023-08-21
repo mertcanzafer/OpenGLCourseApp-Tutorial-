@@ -17,6 +17,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "Light.h"
 
 const float toRadians = 3.14159265f / 180.0f;
 
@@ -27,6 +28,8 @@ CNS::Camera camera; // Our simply camera object
 
 TNS::Texture brickTexture; // Brick texture object
 TNS::Texture dirtTexture; // Dirt texture object
+
+LNS::Light mainLight; // Light object
 
 GLfloat deltaTime{0.0f}; // Delta -> Change!!! deltaTime -> change in time
 GLfloat lastTime{ 0.0f };
@@ -100,7 +103,9 @@ int main()
 	dirtTexture = TNS::Texture("Textures/dirt.png");
 	dirtTexture.loadTexture();
 	
-	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformView{0};
+	mainLight = LNS::Light(1.0f,1.0f,1.0f,1.0f);
+
+	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformView{ 0 }, uniformAmbientIntensity{ 0 }, uniformAmbientColour{ 0 };
 	// Create the perspective projection outside the main loop
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (GLfloat)mainWindow.GetbufferWidth() / (GLfloat)mainWindow.GetbufferHeight(), 0.1f, 100.0f);
 
@@ -128,6 +133,10 @@ int main()
 		uniformModel = shaderList[0]->GetModelLocation();
 		uniformProjection = shaderList[0]->GetProjectionLocation();
 		uniformView = shaderList[0]->GetViewLocation();
+		uniformAmbientColour = shaderList[0]->GetAmbientColourLocation();
+		uniformAmbientIntensity = shaderList[0]->GetAmbientIntensityLocation();
+
+		mainLight.UseLight(uniformAmbientIntensity, uniformAmbientColour);
 
 		glm::mat4 model(1.0f);   	
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));

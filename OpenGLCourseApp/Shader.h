@@ -20,10 +20,12 @@ namespace SNS
 		 void CreateFromFiles(const char* vertexLocation, const char* fragmentLocation);
 
 		 std::string ReadFile(const char* filePath);
-
+		 // Getters
 		 GLuint GetProjectionLocation();
 		 GLuint GetModelLocation();
 		 GLuint GetViewLocation();
+		 GLuint GetAmbientIntensityLocation();
+		 GLuint GetAmbientColourLocation();
 
 		 void UseShader();
 		 void ClearShader();
@@ -39,6 +41,7 @@ namespace SNS
 		  */
 
 		 GLuint shaderID, uniformModel, uniformProjection,uniformView; 
+		 GLuint uniformAmbientIntensity, uniformAmbientColour;
 
 		 void CompileShader(const char* vertexCode, const char* fragmentCode);
 		 void AddShader(GLuint* theProgram, const char* shaderCode, GLenum shaderType);
