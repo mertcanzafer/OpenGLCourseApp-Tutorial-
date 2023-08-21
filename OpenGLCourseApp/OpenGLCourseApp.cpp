@@ -88,7 +88,7 @@ void CreateShaders()
 
 int main()
 {
-	mainWindow = WNS::Window(800,600);
+	mainWindow = WNS::Window(1024,720);
 	mainWindow.Initialise();
 
 	CreateObjects();
