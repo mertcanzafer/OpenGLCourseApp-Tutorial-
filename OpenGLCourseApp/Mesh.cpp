@@ -30,10 +30,12 @@ void Mesh::CreateMesh
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(*vertices) * numOfVertices, vertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(*vertices) * 5, 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(*vertices) * 8, 0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(*vertices) * 5, reinterpret_cast<void*>(sizeof(*vertices) * 3));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(*vertices) * 8, reinterpret_cast<void*>(sizeof(*vertices) * 3));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(*vertices) * 8, reinterpret_cast<void*>(sizeof(*vertices) * 5));
+	glEnableVertexAttribArray(2);
 	// Unbinding
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	// You should unbind IBO AFTER you unbinding the VAO!!!

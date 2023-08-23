@@ -39,36 +39,75 @@ static const char* vShader = "Shaders/shader.vert.txt";
 // Fragment Shader
 static const char* fShader = "Shaders/shader.frag.txt";
 
+void CalcAvgNormals
+(
+	unsigned int* indices, unsigned int numberOfindices, GLfloat* vertices,
+	unsigned int numberOfvertices,unsigned int vLength,unsigned int normalOffset
+)
+{
+	for (unsigned int i{ 0 }; i < numberOfindices; i += 3)
+	{
+		unsigned int in0 = indices[i] * vLength;
+		unsigned int in1 = indices[i + 1] * vLength;
+		unsigned int in2 = indices[i + 2] * vLength;
+
+		glm::vec3 v1(vertices[in1] - vertices[in0], vertices[in1 + 1] - vertices[in0 + 1], vertices[in1 + 2] - vertices[in0 + 2]);
+		glm::vec3 v2(vertices[in2] - vertices[in0], vertices[in2 + 1] - vertices[in0 + 1], vertices[in2 + 2] - vertices[in0 + 2]);
+		glm::vec3 N = glm::cross(v1, v2);
+		// Normalize our normal vector!
+		N = glm::normalize(N);
+
+		in0 += normalOffset;
+		in1 += normalOffset;
+		in2 += normalOffset;
+		vertices[in0] += N.x; vertices[in0 + 1] += N.y; vertices[in0 + 2] += N.z;
+		vertices[in1] += N.x; vertices[in1 + 1] += N.y; vertices[in1 + 2] += N.z;
+		vertices[in2] += N.x; vertices[in2 + 1] += N.y; vertices[in2 + 2] += N.z;
+	}
+
+	for (unsigned int i{ 0 }; i < numberOfvertices / vLength; i++)
+	{
+		unsigned int nOffset = i * vLength + normalOffset;
+		glm::vec3 vec(vertices[nOffset], vertices[nOffset + 1], vertices[nOffset + 2]);
+		vec = glm::normalize(vec);
+		vertices[nOffset] = vec.x; vertices[nOffset + 1] = vec.y; vertices[nOffset + 2] = vec.z;
+	}
+
+}
+
 void CreateObjects()
 {  
-	const int numberOfindices{ 12 }, numberOfvertices{ 20 };
+	const int numberOfindices{ 12 }, numberOfvertices{ 32 };
 
     struct Indices
 	{
 		unsigned int indices[numberOfindices]
 		{
-			0,1,3,
-			1,3,2,
-			2,3,0,
-			0,1,2
+		  0, 1, 2, // Front
+	      3, 2, 1, // Right
+	      3, 0, 2, // Left
+	      3, 1, 0 // Bottom
 		};
 	};
 
     struct Vertices
 	{
-		GLfloat vertices[numberOfvertices]  // Last two points ara u and v for texture coordinates
+		// Last two points ara u and v for texture coordinates
+		GLfloat vertices[numberOfvertices]  
 		{
-		//    X     Y    Z             U    V 
-			-1.0f,-1.0f,0.0f,        0.0f, 0.0f,
-			0.0f,-1.0f,1.0f,         0.5f, 0.0f,
-			1.0f,-1.0f,0.0f,         1.0f, 0.0f,
-			0.0f,1.0f,0.0f,          0.5f, 1.0f
+		//    X     Y    Z             U    V            nx   ny   nz
+			-1.0f,-1.0f,0.0f,        0.0f, 0.0f,         0.0f,0.0f,0.0f,
+			0.0f,-1.0f,1.0f,         0.5f, 0.0f,         0.0f,0.0f,0.0f,
+			1.0f,-1.0f,0.0f,         1.0f, 0.0f,         0.0f,0.0f,0.0f,
+			0.0f,1.0f,0.0f,          0.5f, 1.0f,         0.0f,0.0f,0.0f
 		};
 	};
 
 	// Vertices and Indices struct objects
 	Indices* Ind = new Indices;
 	Vertices* Vert = new Vertices;
+
+	CalcAvgNormals(Ind->indices, numberOfindices, Vert->vertices, numberOfvertices, 8, 5);
 
 	// First Mesh obj
 	MNS::Mesh* mesh1 = new MNS::Mesh();
@@ -103,9 +142,10 @@ int main()
 	dirtTexture = TNS::Texture("Textures/dirt.png");
 	dirtTexture.loadTexture();
 	
-	mainLight = LNS::Light(1.0f,1.0f,1.0f,1.0f);
+	mainLight = LNS::Light(1.0f, 1.0f, 1.0f, 0.2f,2.0f,-1.0f,-2.0f,1.0f);
 
 	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformView{ 0 }, uniformAmbientIntensity{ 0 }, uniformAmbientColour{ 0 };
+	GLuint uniformDirection{ 0 }, uniformDiffuseIntensity{ 0 };
 	// Create the perspective projection outside the main loop
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (GLfloat)mainWindow.GetbufferWidth() / (GLfloat)mainWindow.GetbufferHeight(), 0.1f, 100.0f);
 
@@ -135,8 +175,10 @@ int main()
 		uniformView = shaderList[0]->GetViewLocation();
 		uniformAmbientColour = shaderList[0]->GetAmbientColourLocation();
 		uniformAmbientIntensity = shaderList[0]->GetAmbientIntensityLocation();
+		uniformDirection = shaderList[0]->GetDirectionLocation();
+		uniformDiffuseIntensity = shaderList[0]->GetDiffuseIntensityLocation();
 
-		mainLight.UseLight(uniformAmbientIntensity, uniformAmbientColour);
+		mainLight.UseLight(uniformAmbientIntensity, uniformAmbientColour,uniformDiffuseIntensity,uniformDirection);
 
 		glm::mat4 model(1.0f);   	
 		model = glm::translate(model, glm::vec3(0.0f, 0.0f, -2.5f));

@@ -3,9 +3,8 @@ using namespace SNS;
 
 Shader::Shader()
 	:
-	shaderID{0},uniformModel{0},uniformProjection{0},uniformView{0},uniformAmbientIntensity{0},uniformAmbientColour{0}
-{
-}
+	shaderID{0},uniformModel{0},uniformProjection{0},uniformView{0},
+	uniformAmbientIntensity{0},uniformAmbientColour{0},uniformDiffuseIntensity{0},uniformDirection{0}{}
 
 // Implement the all methods in shader.h class
 
@@ -94,6 +93,8 @@ void Shader::CompileShader
 	uniformView = glGetUniformLocation(shaderID, "view");
 	uniformAmbientColour = glGetUniformLocation(shaderID, "directionalLight.colour");
 	uniformAmbientIntensity = glGetUniformLocation(shaderID, "directionalLight.ambientIntensity");
+	uniformDirection = glGetUniformLocation(shaderID, "directionalLight.direction");
+	uniformDiffuseIntensity = glGetUniformLocation(shaderID, "directionalLight.diffuseIntensity");
 }
 
 // Implement Shaders or Apply them
@@ -145,7 +146,7 @@ void Shader::ClearShader()
 		shaderID = 0;
 	}
 
-	uniformModel = uniformProjection = uniformView = uniformAmbientIntensity = uniformAmbientColour = 0;
+	uniformModel = uniformProjection = uniformView = uniformAmbientIntensity = uniformAmbientColour = uniformDiffuseIntensity = uniformDirection = 0;
 }
 
 Shader::~Shader()
@@ -159,3 +160,5 @@ GLuint Shader::GetProjectionLocation() { return uniformProjection; }
 GLuint Shader::GetViewLocation() { return uniformView; }
 GLuint Shader::GetAmbientIntensityLocation() { return uniformAmbientIntensity; }
 GLuint Shader::GetAmbientColourLocation() { return uniformAmbientColour; }
+GLuint Shader::GetDirectionLocation() { return uniformDirection; }
+GLuint Shader::GetDiffuseIntensityLocation() { return uniformDiffuseIntensity; }
