@@ -132,26 +132,30 @@ void CreateShaders()
 	shaderList.push_back(shader1);
 }
 
-int main()
+void CreateInstances()
 {
-	mainWindow = WNS::Window(1366,768);
+	mainWindow = WNS::Window(1366, 768);
 	mainWindow.Initialise();
 
 	CreateObjects();
 	CreateShaders();
 	camera = CNS::Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.7f);
-	
+
 	brickTexture = TNS::Texture("Textures/brick.png");
 	brickTexture.loadTexture();
 	dirtTexture = TNS::Texture("Textures/dirt.png");
 	dirtTexture.loadTexture();
-	
+
 	ShinyMaterial = MNS::Material(1.0f, 32);
 	DullMaterial = MNS::Material(0.3f, 4);
 
 	mainLight = LNS::Light(1.0f, 1.0f, 1.0f, 0.1f,
-		2.0f,-1.0f,-2.0f,0.4f);
+		2.0f, -1.0f, -2.0f, 0.4f);
+}
 
+int main()
+{
+	CreateInstances();
 	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformView{ 0 }, uniformAmbientIntensity{ 0 }, uniformAmbientColour{ 0 };
 	GLuint uniformDirection{ 0 }, uniformDiffuseIntensity{ 0 };
 	GLuint uniformEyePosition{ 0 }, uniformSpecularIntensity{ 0 }, uniformShininess{0};
@@ -160,7 +164,6 @@ int main()
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (GLfloat)mainWindow.GetbufferWidth() / (GLfloat)mainWindow.GetbufferHeight(), 0.1f, 100.0f);
 
 	// Loop until window closed.
-
 	while (!mainWindow.getShouldClose())
 	{
 
