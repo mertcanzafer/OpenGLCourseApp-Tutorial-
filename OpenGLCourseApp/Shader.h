@@ -28,6 +28,9 @@ namespace SNS
 		 GLuint GetAmbientColourLocation();
 		 GLuint GetDiffuseIntensityLocation();
 		 GLuint GetDirectionLocation();
+		 GLuint GetSpecularIntensityLocation();
+		 GLuint GetShininessLocation();
+		 GLuint GetEyePositionLocation();
 
 		 void UseShader();
 		 void ClearShader();
@@ -45,6 +48,7 @@ namespace SNS
 		 GLuint shaderID, uniformModel, uniformProjection,uniformView; 
 		 GLuint uniformAmbientIntensity, uniformAmbientColour;
 		 GLuint uniformDiffuseIntensity, uniformDirection;
+		 GLuint unformEyePosition, uniformSpecularIntensity, uniformShininess;
 
 		 void CompileShader(const char* vertexCode, const char* fragmentCode);
 		 void AddShader(GLuint* theProgram, const char* shaderCode, GLenum shaderType);

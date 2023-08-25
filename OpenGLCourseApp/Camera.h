@@ -17,6 +17,8 @@ namespace CNS
 		void keyControl(bool* keys,GLfloat deltaTime);
 		void mouseControl(GLfloat xChange, GLfloat yChange);
 
+		// Get the camera pos. for specular lighting!
+		glm::vec3 GetCameraPosition();
 		glm::mat4 calculateViewMatrix();
 
 		~Camera();

@@ -4,7 +4,8 @@ using namespace SNS;
 Shader::Shader()
 	:
 	shaderID{0},uniformModel{0},uniformProjection{0},uniformView{0},
-	uniformAmbientIntensity{0},uniformAmbientColour{0},uniformDiffuseIntensity{0},uniformDirection{0}{}
+	uniformAmbientIntensity{0},uniformAmbientColour{0},uniformDiffuseIntensity{0},uniformDirection{0},
+	unformEyePosition{ 0 }, uniformShininess{ 0 }, uniformSpecularIntensity{ 0 } {}
 
 // Implement the all methods in shader.h class
 
@@ -95,6 +96,9 @@ void Shader::CompileShader
 	uniformAmbientIntensity = glGetUniformLocation(shaderID, "directionalLight.ambientIntensity");
 	uniformDirection = glGetUniformLocation(shaderID, "directionalLight.direction");
 	uniformDiffuseIntensity = glGetUniformLocation(shaderID, "directionalLight.diffuseIntensity");
+	uniformSpecularIntensity = glGetUniformLocation(shaderID, "material.specularIntensity");
+	uniformShininess = glGetUniformLocation(shaderID, "material.shininess");
+	unformEyePosition = glGetUniformLocation(shaderID, "eyePosition");
 }
 
 // Implement Shaders or Apply them
@@ -146,7 +150,8 @@ void Shader::ClearShader()
 		shaderID = 0;
 	}
 
-	uniformModel = uniformProjection = uniformView = uniformAmbientIntensity = uniformAmbientColour = uniformDiffuseIntensity = uniformDirection = 0;
+	uniformModel = uniformProjection = uniformView = uniformAmbientIntensity = uniformAmbientColour = 0;
+	uniformDiffuseIntensity = uniformDirection = uniformShininess = unformEyePosition = uniformSpecularIntensity = 0;
 }
 
 Shader::~Shader()
@@ -162,3 +167,6 @@ GLuint Shader::GetAmbientIntensityLocation() { return uniformAmbientIntensity; }
 GLuint Shader::GetAmbientColourLocation() { return uniformAmbientColour; }
 GLuint Shader::GetDirectionLocation() { return uniformDirection; }
 GLuint Shader::GetDiffuseIntensityLocation() { return uniformDiffuseIntensity; }
+GLuint Shader::GetShininessLocation() { return uniformShininess; }
+GLuint Shader::GetSpecularIntensityLocation() { return uniformSpecularIntensity; }
+GLuint Shader::GetEyePositionLocation() { return unformEyePosition; }

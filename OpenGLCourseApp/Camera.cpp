@@ -88,8 +88,6 @@ void Camera::mouseControl
 	update();
 }
 
+glm::vec3 Camera::GetCameraPosition() { return position; }
 
-Camera::~Camera()
-{
-
-}
+Camera::~Camera(){}
