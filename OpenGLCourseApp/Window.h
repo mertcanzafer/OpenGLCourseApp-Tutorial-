@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-
+#include <string>
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
 
@@ -27,6 +27,7 @@ namespace WNS
 		 GLfloat getXchange();
 		 GLfloat getYChange();
 
+		 void FPSCounter();
 		 void swapBuffers(){ glfwSwapBuffers(MainWindow); }
 
 		 ~Window();
@@ -36,6 +37,10 @@ namespace WNS
 		  GLFWwindow* MainWindow; // our window
 		  GLint width, height;
 		  GLint bufferWidth, bufferHeight; // Get buffer size Info.
+
+		  // Important Variables for FPS
+		  double currentTime, prevTime, TimeDiff;
+		  unsigned int counter;
 
 		  // Some important variables for controls keys on the keyboard and mause
 		  bool keys[1024]; // Range of ASCII code

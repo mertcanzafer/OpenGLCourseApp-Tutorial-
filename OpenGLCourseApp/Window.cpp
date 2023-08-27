@@ -3,7 +3,9 @@
 using namespace WNS;
 
 Window::Window()
-	:width{800},height{600},xChange{0.0f},yChange{0.0f}
+	:width{800},height{600},xChange{0.0f},yChange{0.0f},
+	currentTime{0.0},prevTime{0.0},TimeDiff{0.0},counter{0}
+
 {
 	for (auto &b : keys)
 	{
@@ -20,7 +22,11 @@ Window::Window
 	this->height = windowHeight;
 	this->xChange = 0.0f;
 	this->yChange = 0.0f;
-	
+	this->currentTime = 0.0;
+	this->prevTime = 0.0;
+	this->TimeDiff = 0.0;
+	this->counter = 0;
+
 	for (auto& b : keys)
 	{
 		b = false;
@@ -78,10 +84,30 @@ int Window::Initialise()
 
 	glEnable(GL_DEPTH_TEST);
 
+	// Enable calling face
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
+	glFrontFace(GL_CCW);
+
 	// Setup Viewport size
 	glViewport(0, 0, bufferWidth, bufferHeight);
 
 	glfwSetWindowUserPointer(MainWindow, this);
+}
+
+void Window::FPSCounter()
+{
+	currentTime = glfwGetTime();
+	TimeDiff = currentTime - prevTime;
+	counter++;
+	if (TimeDiff >= 1.0 / 30.0)
+	{
+		std::string FPS = std::to_string((1.0 / TimeDiff) * counter);
+		std::string Second = std::to_string(TimeDiff / counter);
+		std::string WindowTitle = "3D Game Engine - " + FPS + " FPS / " + Second + "s";
+		glfwSetWindowTitle(MainWindow, WindowTitle.c_str());
+		prevTime = currentTime; counter = 0;
+	}
 }
 
 void Window::CreateCallBacks()
