@@ -8,6 +8,8 @@
 
 #include <Gl\glew.h>
 
+#include "DirectionalLight.h"
+#include "PointLight.h"
 
 namespace SNS 
 {
@@ -32,12 +34,24 @@ namespace SNS
 		 GLuint GetShininessLocation();
 		 GLuint GetEyePositionLocation();
 
+		 void SetDirectionalLight(LNS::Light* mLight);
 		 void UseShader();
 		 void ClearShader();
 
 		 ~Shader();
 
 	  private:
+
+		  int pointLightCount;
+
+		  struct 
+		  {
+			  GLuint uniformColour;
+			  GLuint uniformAmbientIntensity;
+			  GLuint uniformDiffuseIntensity;
+
+			  GLuint uniformDirection;
+		  }uniformDirectionalLight;
 
 		  /*
 		    UniformModel: An uniform value how much moved coordinates along the x axis.
@@ -46,8 +60,6 @@ namespace SNS
 		  */
 
 		 GLuint shaderID, uniformModel, uniformProjection,uniformView; 
-		 GLuint uniformAmbientIntensity, uniformAmbientColour;
-		 GLuint uniformDiffuseIntensity, uniformDirection;
 		 GLuint unformEyePosition, uniformSpecularIntensity, uniformShininess;
 
 		 void CompileShader(const char* vertexCode, const char* fragmentCode);

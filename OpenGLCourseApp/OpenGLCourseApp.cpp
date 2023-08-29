@@ -157,8 +157,7 @@ void CreateInstances()
 int main()
 {
 	CreateInstances();
-	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformView{ 0 }, uniformAmbientIntensity{ 0 }, uniformAmbientColour{ 0 };
-	GLuint uniformDirection{ 0 }, uniformDiffuseIntensity{ 0 };
+	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformView{ 0 };
 	GLuint uniformEyePosition{ 0 }, uniformSpecularIntensity{ 0 }, uniformShininess{0};
 
 	// Create the perspective projection outside the main loop
@@ -188,15 +187,11 @@ int main()
 		uniformModel = shaderList[0]->GetModelLocation();
 		uniformProjection = shaderList[0]->GetProjectionLocation();
 		uniformView = shaderList[0]->GetViewLocation();
-		uniformAmbientColour = shaderList[0]->GetAmbientColourLocation();
-		uniformAmbientIntensity = shaderList[0]->GetAmbientIntensityLocation();
-		uniformDirection = shaderList[0]->GetDirectionLocation();
-		uniformDiffuseIntensity = shaderList[0]->GetDiffuseIntensityLocation();
 		uniformEyePosition = shaderList[0]->GetEyePositionLocation();
 		uniformShininess = shaderList[0]->GetShininessLocation();
 		uniformSpecularIntensity = shaderList[0]->GetSpecularIntensityLocation();
 
-		mainLight->UseLight(uniformAmbientIntensity, uniformAmbientColour,uniformDiffuseIntensity,uniformDirection);
+		shaderList[0]->SetDirectionalLight(mainLight);
 
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));

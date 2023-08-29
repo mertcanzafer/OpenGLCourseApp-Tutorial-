@@ -4,7 +4,6 @@ using namespace SNS;
 Shader::Shader()
 	:
 	shaderID{0},uniformModel{0},uniformProjection{0},uniformView{0},
-	uniformAmbientIntensity{0},uniformAmbientColour{0},uniformDiffuseIntensity{0},uniformDirection{0},
 	unformEyePosition{ 0 }, uniformShininess{ 0 }, uniformSpecularIntensity{ 0 } {}
 
 // Implement the all methods in shader.h class
@@ -92,10 +91,10 @@ void Shader::CompileShader
 	uniformModel = glGetUniformLocation(shaderID, "model");
 	uniformProjection = glGetUniformLocation(shaderID, "projection");
 	uniformView = glGetUniformLocation(shaderID, "view");
-	uniformAmbientColour = glGetUniformLocation(shaderID, "directionalLight.colour");
-	uniformAmbientIntensity = glGetUniformLocation(shaderID, "directionalLight.ambientIntensity");
-	uniformDirection = glGetUniformLocation(shaderID, "directionalLight.direction");
-	uniformDiffuseIntensity = glGetUniformLocation(shaderID, "directionalLight.diffuseIntensity");
+	uniformDirectionalLight.uniformColour = glGetUniformLocation(shaderID, "directionalLight.colour");
+	uniformDirectionalLight.uniformAmbientIntensity = glGetUniformLocation(shaderID, "directionalLight.ambientIntensity");
+	uniformDirectionalLight.uniformDirection = glGetUniformLocation(shaderID, "directionalLight.direction");
+	uniformDirectionalLight.uniformDiffuseIntensity = glGetUniformLocation(shaderID, "directionalLight.diffuseIntensity");
 	uniformSpecularIntensity = glGetUniformLocation(shaderID, "material.specularIntensity");
 	uniformShininess = glGetUniformLocation(shaderID, "material.shininess");
 	unformEyePosition = glGetUniformLocation(shaderID, "eyePosition");
@@ -133,6 +132,13 @@ void Shader::AddShader
 	glAttachShader(*theProgram, theShader);
 }
 
+void Shader::SetDirectionalLight(LNS::Light* mLight)
+{   
+	LNS::DirectionalLight *dLight = dynamic_cast<LNS::DirectionalLight*>(mLight);
+
+	dLight->UseLight(uniformDirectionalLight.uniformAmbientIntensity, uniformDirectionalLight.uniformColour,
+		uniformDirectionalLight.uniformDiffuseIntensity, uniformDirectionalLight.uniformDirection);
+}
 
 void Shader::UseShader()
 {
@@ -150,8 +156,8 @@ void Shader::ClearShader()
 		shaderID = 0;
 	}
 
-	uniformModel = uniformProjection = uniformView = uniformAmbientIntensity = uniformAmbientColour = 0;
-	uniformDiffuseIntensity = uniformDirection = uniformShininess = unformEyePosition = uniformSpecularIntensity = 0;
+	uniformModel = uniformProjection = uniformView = 0;
+	uniformShininess = unformEyePosition = uniformSpecularIntensity = 0;
 }
 
 Shader::~Shader()
@@ -163,10 +169,10 @@ Shader::~Shader()
 GLuint Shader::GetModelLocation() { return uniformModel; }
 GLuint Shader::GetProjectionLocation() { return uniformProjection; }
 GLuint Shader::GetViewLocation() { return uniformView; }
-GLuint Shader::GetAmbientIntensityLocation() { return uniformAmbientIntensity; }
-GLuint Shader::GetAmbientColourLocation() { return uniformAmbientColour; }
-GLuint Shader::GetDirectionLocation() { return uniformDirection; }
-GLuint Shader::GetDiffuseIntensityLocation() { return uniformDiffuseIntensity; }
+GLuint Shader::GetAmbientIntensityLocation() { return uniformDirectionalLight.uniformAmbientIntensity; }
+GLuint Shader::GetAmbientColourLocation() { return uniformDirectionalLight.uniformColour; }
+GLuint Shader::GetDirectionLocation() { return uniformDirectionalLight.uniformDirection; }
+GLuint Shader::GetDiffuseIntensityLocation() { return uniformDirectionalLight.uniformDiffuseIntensity; }
 GLuint Shader::GetShininessLocation() { return uniformShininess; }
 GLuint Shader::GetSpecularIntensityLocation() { return uniformSpecularIntensity; }
 GLuint Shader::GetEyePositionLocation() { return unformEyePosition; }
