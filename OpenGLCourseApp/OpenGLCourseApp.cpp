@@ -17,7 +17,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Texture.h"
-#include "Light.h"
+#include "DirectionalLight.h"
 #include "Material.h"
 
 const float toRadians = 3.14159265f / 180.0f;
@@ -33,7 +33,7 @@ TNS::Texture dirtTexture; // Dirt texture object
 MNS::Material ShinyMaterial; // our material objects which is shiny for this case
 MNS::Material DullMaterial;  // Material objects which is dull now
 
-LNS::Light mainLight; // Light object
+LNS::Light *mainLight; // Light object
 
 GLfloat deltaTime{0.0f}; // Delta -> Change!!! deltaTime -> change in time
 GLfloat lastTime{ 0.0f };
@@ -149,8 +149,9 @@ void CreateInstances()
 	ShinyMaterial = MNS::Material(1.0f, 32);
 	DullMaterial = MNS::Material(0.3f, 4);
 
-	mainLight = LNS::Light(1.0f, 1.0f, 1.0f, 0.1f,
-		2.0f, -1.0f, -2.0f, 0.4f);
+	mainLight = new LNS::DirectionalLight(1.0f, 1.0f, 1.0f, 
+		                                 0.1f, 0.4f,
+		                                 0.0f, 0.0f, -2.0f);
 }
 
 int main()
@@ -195,7 +196,7 @@ int main()
 		uniformShininess = shaderList[0]->GetShininessLocation();
 		uniformSpecularIntensity = shaderList[0]->GetSpecularIntensityLocation();
 
-		mainLight.UseLight(uniformAmbientIntensity, uniformAmbientColour,uniformDiffuseIntensity,uniformDirection);
+		mainLight->UseLight(uniformAmbientIntensity, uniformAmbientColour,uniformDiffuseIntensity,uniformDirection);
 
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
@@ -222,5 +223,6 @@ int main()
 		mainWindow.swapBuffers();
 	}
 
+	delete mainLight;
 	return 0;
 }

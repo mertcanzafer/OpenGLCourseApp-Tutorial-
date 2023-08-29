@@ -10,20 +10,17 @@ namespace LNS
 	  public:
 		  Light();
 		  // Overloaded Constructor
-		  Light(GLfloat red,GLfloat green,GLfloat blue,GLfloat aIntensity,
-			  GLfloat xDir,GLfloat yDir,GLfloat zDir,GLfloat dIntensity);
+		  Light(GLfloat red,GLfloat green,GLfloat blue,GLfloat aIntensity,GLfloat dIntensity);
 
-		  void UseLight(GLfloat ambientIntensityLoc,GLfloat ambientColorLoc,
-			  GLfloat diffuseIntensityLoc,GLfloat directionLoc);
+		  virtual void UseLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
+			  GLfloat diffuseIntensityLoc, GLfloat directionLoc) = 0;
 
-		  ~Light();
+		 virtual ~Light();
 	
-	  private:
+	  protected:
 		  // First variable is color of our light
 		  glm::vec3 colour;
 		  GLfloat ambientIntensity; // Intensity of our light source.
-
-		  glm::vec3 direction; //The direction of our light
 		  GLfloat diffuseIntensity;
 	};
 }
