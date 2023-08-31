@@ -18,6 +18,7 @@
 #include "Camera.h"
 #include "Texture.h"
 #include "DirectionalLight.h"
+#include "PointLight.h"
 #include "Material.h"
 
 const float toRadians = 3.14159265f / 180.0f;
@@ -29,11 +30,14 @@ CNS::Camera camera; // Our simply camera object
 
 TNS::Texture brickTexture; // Brick texture object
 TNS::Texture dirtTexture; // Dirt texture object
+TNS::Texture plainTexture; // Plain texture which has Alpha channel!!
 
 MNS::Material ShinyMaterial; // our material objects which is shiny for this case
 MNS::Material DullMaterial;  // Material objects which is dull now
 
 LNS::Light *mainLight; // Light object
+LNS::PointLight pointLight[MAX_POINT_LIGHTS];
+unsigned int pointLightCount = 0;
 
 GLfloat deltaTime{0.0f}; // Delta -> Change!!! deltaTime -> change in time
 GLfloat lastTime{ 0.0f };
@@ -82,6 +86,7 @@ void CalcAvgNormals
 void CreateObjects()
 {  
 	const int numberOfindices{ 12 }, numberOfvertices{ 32 };
+	const int numberOfFloorVertices{ 32 },numberOfFloorIndices{ 6 };
 
     struct Indices
 	{
@@ -92,6 +97,13 @@ void CreateObjects()
 	      3, 0, 2, // Left
 	      3, 1, 0 // Bottom
 		};
+
+		unsigned int FloorIndices[numberOfFloorIndices]
+		{
+			0, 2, 1,
+			1, 2, 3
+		};
+
 	};
 
     struct Vertices
@@ -105,6 +117,15 @@ void CreateObjects()
 			1.0f,-1.0f,-0.6f,        1.0f, 0.0f,         0.0f,0.0f,0.0f,
 			0.0f,1.0f,0.0f,          0.5f, 1.0f,         0.0f,0.0f,0.0f
 		};
+
+		GLfloat FloorVertices[numberOfFloorVertices]
+		{
+			-10.0f,0.0f,-10.0f,       0.0f,0.0f,     0.0f,-1.0f,0.0f,
+			 10.0f,0.0f,-10.0f,      10.0f,0.0f,     0.0f,-1.0f,0.0f,
+			-10.0f,0.0f,10.0f,       0.0f ,10.0f,    0.0f,-1.0f,0.0f,
+			 10.0f,0.0f,10.0f,       10.0f,10.0f,    0.0f,-1.0f,0.0f
+		};
+
 	};
 
 	// Vertices and Indices struct objects
@@ -123,6 +144,10 @@ void CreateObjects()
 	mesh2->CreateMesh(Vert->vertices, Ind->indices, numberOfvertices, numberOfindices);
 	meshList.push_back(mesh2);
 
+	// Third Mesh Obj
+	MNS::Mesh* mesh3 = new MNS::Mesh();
+	mesh3->CreateMesh(Vert->FloorVertices, Ind->FloorIndices, numberOfFloorVertices, numberOfFloorIndices);
+	meshList.push_back(mesh3);
 }
 
 void CreateShaders()
@@ -145,13 +170,27 @@ void CreateInstances()
 	brickTexture.loadTexture();
 	dirtTexture = TNS::Texture("Textures/dirt.png");
 	dirtTexture.loadTexture();
+	plainTexture = TNS::Texture("Textures/plain.png");
+	plainTexture.loadTexture();
 
-	ShinyMaterial = MNS::Material(1.0f, 32);
+	ShinyMaterial = MNS::Material(4.0f, 256);
 	DullMaterial = MNS::Material(0.3f, 4);
 
 	mainLight = new LNS::DirectionalLight(1.0f, 1.0f, 1.0f, 
-		                                 0.1f, 0.4f,
-		                                 0.0f, 0.0f, -2.0f);
+		                                 0.0f, 0.0f,
+		                                 0.0f, 0.0f, -1.0f);
+	
+	pointLight[0] = LNS::PointLight(0.0f, 0.0f, 1.0f,
+		                            0.0f, 1.0f,
+		                            0.0f, 0.0f, 0.0f,
+		                            0.3f, 0.2f, 0.1f);
+	pointLightCount++;
+
+	pointLight[1] = LNS::PointLight(0.0f, 1.0f, 0.0f,
+		                            0.0f, 1.0f,
+		                           -4.0f, 2.0f, 0.0f,
+		                           0.3f, 0.1f, 0.1f);
+   pointLightCount++;
 }
 
 int main()
@@ -192,6 +231,7 @@ int main()
 		uniformSpecularIntensity = shaderList[0]->GetSpecularIntensityLocation();
 
 		shaderList[0]->SetDirectionalLight(mainLight);
+		shaderList[0]->SetPointLights(pointLight, pointLightCount);
 
 		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(camera.calculateViewMatrix()));
@@ -214,10 +254,19 @@ int main()
 		DullMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);
 		meshList[1]->RenderMesh();
 
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
+		//model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		plainTexture.useTexture();
+		ShinyMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);
+		meshList[2]->RenderMesh();
+
 		glUseProgram(0);
 		mainWindow.swapBuffers();
 	}
 
 	delete mainLight;
+
 	return 0;
 }

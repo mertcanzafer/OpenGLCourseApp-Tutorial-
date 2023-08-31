@@ -84,10 +84,10 @@ int Window::Initialise()
 
 	glEnable(GL_DEPTH_TEST);
 
-	// Enable calling face
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
-	glFrontFace(GL_CCW);
+	// Enable culling face
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_FRONT);
+	//glFrontFace(GL_CCW);
 
 	// Setup Viewport size
 	glViewport(0, 0, bufferWidth, bufferHeight);

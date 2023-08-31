@@ -18,7 +18,7 @@ PointLight::PointLight
     exponent = Exponent;
 }
 
-void PointLight::UseLight
+void PointLight::useLight
 (
     GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
     GLfloat diffuseIntensityLoc, GLfloat positionLoc,

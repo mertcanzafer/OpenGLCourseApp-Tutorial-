@@ -56,6 +56,14 @@ void Camera::keyControl
   {
 	  position = glm::vec3(0.0f, 0.0f, 0.0f);
   }
+  else if (keys[GLFW_KEY_U])
+  {
+	  position += worldUp * 0.001f;
+  }
+  else if (keys[GLFW_KEY_K])
+  {
+	  position -= worldUp * 0.001f;
+  }
 }
 
 glm::mat4 Camera::calculateViewMatrix()

@@ -11,6 +11,8 @@ namespace TNS
 	{
 	  public:
           
+		  static int TextureObjectCount;
+
 		  Texture();
 		  Texture(const char* fileLoc);
 

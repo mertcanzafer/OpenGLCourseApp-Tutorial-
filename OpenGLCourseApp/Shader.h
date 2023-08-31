@@ -10,6 +10,7 @@
 
 #include "DirectionalLight.h"
 #include "PointLight.h"
+#include "CommonValues.h"
 
 namespace SNS 
 {
@@ -35,6 +36,7 @@ namespace SNS
 		 GLuint GetEyePositionLocation();
 
 		 void SetDirectionalLight(LNS::Light* mLight);
+		 void SetPointLights(LNS::PointLight* pLight,unsigned int LightCount);
 		 void UseShader();
 		 void ClearShader();
 
@@ -43,6 +45,7 @@ namespace SNS
 	  private:
 
 		  int pointLightCount;
+		  GLuint uniformPointLightCount;
 
 		  struct 
 		  {
@@ -52,6 +55,18 @@ namespace SNS
 
 			  GLuint uniformDirection;
 		  }uniformDirectionalLight;
+
+		  struct
+		  {
+			  GLuint uniformColour;
+			  GLuint uniformAmbientIntensity;
+			  GLuint uniformDiffuseIntensity;
+
+			  GLuint uniformPosition;
+			  GLuint uniformConstant;
+			  GLuint uniformLinear;
+			  GLuint uniformExponent;
+		  }uniformPointLight[MAX_POINT_LIGHTS];
 
 		  /*
 		    UniformModel: An uniform value how much moved coordinates along the x axis.
@@ -64,7 +79,7 @@ namespace SNS
 
 		 void CompileShader(const char* vertexCode, const char* fragmentCode);
 		 void AddShader(GLuint* theProgram, const char* shaderCode, GLenum shaderType);
-
+		 void HandlePointLights();
 	};
 }
 
