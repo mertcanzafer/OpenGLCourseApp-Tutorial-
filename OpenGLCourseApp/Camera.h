@@ -20,6 +20,7 @@ namespace CNS
 		// Get the camera pos. for specular lighting!
 		glm::vec3 GetCameraPosition();
 		glm::mat4 calculateViewMatrix();
+		glm::vec3 GetCameraDireciton();
 
 		~Camera();
 	 private:

@@ -97,5 +97,6 @@ void Camera::mouseControl
 }
 
 glm::vec3 Camera::GetCameraPosition() { return position; }
+glm::vec3 Camera::GetCameraDireciton() { return glm::normalize(front); }
 
 Camera::~Camera(){}

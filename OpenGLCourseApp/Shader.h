@@ -10,6 +10,7 @@
 
 #include "DirectionalLight.h"
 #include "PointLight.h"
+#include "SpotLight.h"
 #include "CommonValues.h"
 
 namespace SNS 
@@ -37,6 +38,7 @@ namespace SNS
 
 		 void SetDirectionalLight(LNS::Light* mLight);
 		 void SetPointLights(LNS::PointLight* pLight,unsigned int LightCount);
+		 void SetSpotLights(LNS::SpotLight* sLight, unsigned int sLightCount);
 		 void UseShader();
 		 void ClearShader();
 
@@ -45,7 +47,8 @@ namespace SNS
 	  private:
 
 		  int pointLightCount;
-		  GLuint uniformPointLightCount;
+		  int spotLightCount;
+		  GLuint uniformPointLightCount,uniformSpotLightCount;
 
 		  struct 
 		  {
@@ -68,6 +71,22 @@ namespace SNS
 			  GLuint uniformExponent;
 		  }uniformPointLight[MAX_POINT_LIGHTS];
 
+		  struct 
+		  {
+			  GLuint uniformColour;
+			  GLuint uniformAmbientIntensity;
+			  GLuint uniformDiffuseIntensity;
+
+			  GLuint uniformPosition;
+			  GLuint uniformConstant;
+			  GLuint uniformLinear;
+			  GLuint uniformExponent;
+
+			  GLuint uniformDirection;
+			  GLuint uniformEdge;
+
+		  }uniformSpotLight[MAX_SPOT_LIGHTS];
+
 		  /*
 		    UniformModel: An uniform value how much moved coordinates along the x axis.
 			UniformProjection: The variable that holds id and location for projection in vertex shader.
@@ -80,6 +99,7 @@ namespace SNS
 		 void CompileShader(const char* vertexCode, const char* fragmentCode);
 		 void AddShader(GLuint* theProgram, const char* shaderCode, GLenum shaderType);
 		 void HandlePointLights();
+		 void HandleSpotLights();
 	};
 }
 

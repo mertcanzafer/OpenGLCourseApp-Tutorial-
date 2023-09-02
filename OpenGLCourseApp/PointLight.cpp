@@ -20,9 +20,9 @@ PointLight::PointLight
 
 void PointLight::useLight
 (
-    GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
-    GLfloat diffuseIntensityLoc, GLfloat positionLoc,
-    GLfloat constantLoc, GLfloat linearLoc, GLfloat exponentLoc
+    GLuint ambientIntensityLoc, GLuint ambientColorLoc,
+    GLuint diffuseIntensityLoc, GLuint positionLoc,
+    GLuint constantLoc, GLuint linearLoc, GLuint exponentLoc
 )
 {
 

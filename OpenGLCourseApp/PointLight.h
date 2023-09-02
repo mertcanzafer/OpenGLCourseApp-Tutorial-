@@ -13,15 +13,15 @@ namespace LNS
               GLfloat Constant, GLfloat Linear, GLfloat Exponent);
 
           // Function overloading with Inheritance
-          void useLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
-              GLfloat diffuseIntensityLoc, GLfloat positionLoc,
-              GLfloat constantLoc,GLfloat linearLoc,GLfloat exponentLoc);
+         void useLight(GLuint ambientIntensityLoc, GLuint ambientColorLoc,
+              GLuint diffuseIntensityLoc, GLuint positionLoc,
+              GLuint constantLoc,GLuint linearLoc,GLuint exponentLoc);
 
           void UseLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
               GLfloat diffuseIntensityLoc, GLfloat directionLoc){}
           
         virtual ~PointLight();
-      private:
+      protected:
           glm::vec3 position; // position of our light source in 3d world space
 
           /*
