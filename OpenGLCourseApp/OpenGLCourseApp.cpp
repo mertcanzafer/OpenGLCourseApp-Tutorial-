@@ -22,8 +22,6 @@
 #include "SpotLight.h"
 #include "Material.h"
 
-const float toRadians = 3.14159265f / 180.0f;
-
 WNS::Window mainWindow; // Our simply window object
 std::vector<MNS::Mesh*> meshList; // The vector list that holds mesh objects
 std::vector<SNS::Shader*> shaderList; // The vector list that holds shader objects

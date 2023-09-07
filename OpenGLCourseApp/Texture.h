@@ -16,7 +16,9 @@ namespace TNS
 		  Texture();
 		  Texture(const char* fileLoc);
 
-		  void loadTexture();
+		  bool loadTexture();
+		  bool loadTextureA();
+
 		  void useTexture();
 		  void clearTexture();
 
