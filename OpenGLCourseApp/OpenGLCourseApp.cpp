@@ -21,6 +21,9 @@
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "Material.h"
+#include "Model.h"
+
+const float toRadian{ 0.0174532925 };
 
 WNS::Window mainWindow; // Our simply window object
 std::vector<MNS::Mesh*> meshList; // The vector list that holds mesh objects
@@ -33,6 +36,9 @@ TNS::Texture plainTexture; // Plain texture which has Alpha channel!!
 
 MNS::Material ShinyMaterial; // our material objects which is shiny for this case
 MNS::Material DullMaterial;  // Material objects which is dull now
+
+MNS::Model xWing; // Starwars aircraft model
+MNS::Model BlackHawk;// Armed helicopter
 
 LNS::Light *mainLight; // Light object
 LNS::PointLight pointLight[MAX_POINT_LIGHTS];
@@ -177,21 +183,26 @@ void CreateInstances()
 	ShinyMaterial = MNS::Material(4.0f, 256);
 	DullMaterial = MNS::Material(0.3f, 4);
 
+	xWing = MNS::Model();
+	xWing.LoadModel("Models/x-wing.obj");
+	BlackHawk = MNS::Model();
+	BlackHawk.LoadModel("Models/uh60.obj");
+		
 	mainLight = new LNS::DirectionalLight(1.0f, 1.0f, 1.0f, 
-		                                 0.0f, 0.0f,
+		                                 0.3f, 0.6f,
 		                                 0.0f, 0.0f, -1.0f);
 	
 	pointLight[0] = LNS::PointLight(0.0f, 0.0f, 1.0f,
 		                            0.0f, 0.0f,
 		                            0.0f, 0.0f, 0.0f,
 		                            0.3f, 0.2f, 0.1f);
-	//pointLightCount++;
+	pointLightCount++;
 
 	pointLight[1] = LNS::PointLight(0.0f, 1.0f, 0.0f,
 		                            0.0f, 0.0f,
 		                           -4.0f, 2.0f, 0.0f,
 		                           0.3f, 0.1f, 0.1f);
-   //pointLightCount++;
+   pointLightCount++;
 
    spotLight[0] = LNS::SpotLight(1.0f, 1.0f, 1.0f,
 	                             0.0f, 1.0f,
@@ -212,6 +223,7 @@ void CreateInstances()
 
 int main()
 {
+    GLfloat movementSpeed{ 2.0f };
 	CreateInstances();
 	GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformView{ 0 };
 	GLuint uniformEyePosition{ 0 }, uniformSpecularIntensity{ 0 }, uniformShininess{0};
@@ -249,7 +261,7 @@ int main()
 
 		glm::vec3 LowerLight = camera.GetCameraPosition();
 		LowerLight.y -= 0.5f;
-		spotLight[1].SetFlash(LowerLight, camera.GetCameraDireciton());
+		//spotLight[1].SetFlash(LowerLight, camera.GetCameraDireciton());
 
 		shaderList[0]->SetDirectionalLight(mainLight);
 		shaderList[0]->SetPointLights(pointLight, pointLightCount);
@@ -283,6 +295,29 @@ int main()
 		dirtTexture.useTexture();
 		ShinyMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);
 		meshList[2]->RenderMesh();
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-6.5f, -2.0f, 15.0f));
+		model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		ShinyMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);
+		xWing.RenderModel();
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(-3.0f, movementSpeed, 0.0f));
+		model = glm::rotate(model, -90.0f * toRadian, glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
+		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		ShinyMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);
+		BlackHawk.RenderModel();
+		
+		if (movementSpeed > -1.27f)
+		{
+			movementSpeed -= 0.01f;
+		}
+		else {
+			movementSpeed = -1.27f;
+		}
 
 		glUseProgram(0);
 		mainWindow.swapBuffers();

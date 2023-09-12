@@ -23,6 +23,9 @@ void Model::LoadModel
 	const std::string& filename
 )
 {
+	// Calling ClearModel() here allows you to reuse the same object from the class for loading different model. 
+	ClearModel();
+
 	Assimp::Importer importer;
 
 	/*
