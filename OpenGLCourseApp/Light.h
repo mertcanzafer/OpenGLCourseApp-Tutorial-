@@ -3,6 +3,8 @@
 #include <GL\glew.h>
 #include <glm\glm.hpp>
 
+#include "ShadowMap.h"
+
 namespace LNS
 {
 	class Light
@@ -10,10 +12,17 @@ namespace LNS
 	  public:
 		  Light();
 		  // Overloaded Constructor
-		  Light(GLfloat red,GLfloat green,GLfloat blue,GLfloat aIntensity,GLfloat dIntensity);
+		  Light(GLfloat shadowWidth,GLfloat shadowHeight,
+			  GLfloat red,GLfloat green,GLfloat blue,
+			  GLfloat aIntensity,GLfloat dIntensity);
 
 		  virtual void UseLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
 			  GLfloat diffuseIntensityLoc, GLfloat directionLoc) = 0;
+
+		  Light(const Light& copy);
+		  void operator=(const Light& copy);
+
+		  SMN::ShadowMap* GetShadowMap() { return shadowMap; }
 
 		 virtual ~Light();
 	
@@ -22,6 +31,10 @@ namespace LNS
 		  glm::vec3 colour;
 		  GLfloat ambientIntensity; // Intensity of our light source.
 		  GLfloat diffuseIntensity;
+
+		  SMN::ShadowMap* shadowMap;
+		  glm::mat4 LightProj;
+
 	};
 }
 

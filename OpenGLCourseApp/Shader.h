@@ -7,6 +7,8 @@
 #include <string>
 
 #include <Gl\glew.h>
+#include<glm\glm.hpp>
+#include<glm\gtc\type_ptr.hpp>
 
 #include "DirectionalLight.h"
 #include "PointLight.h"
@@ -39,6 +41,10 @@ namespace SNS
 		 void SetDirectionalLight(LNS::Light* mLight);
 		 void SetPointLights(LNS::PointLight* pLight,unsigned int LightCount);
 		 void SetSpotLights(LNS::SpotLight* sLight, unsigned int sLightCount);
+		 void SetTexture(GLuint textureUnit);
+		 void SetDirectionalShadowMap(GLuint textureUnit);
+		 void SetDirectionalLightTransform(glm::mat4* lTransform); 
+
 		 void UseShader();
 		 void ClearShader();
 
@@ -95,11 +101,13 @@ namespace SNS
 
 		 GLuint shaderID, uniformModel, uniformProjection,uniformView; 
 		 GLuint unformEyePosition, uniformSpecularIntensity, uniformShininess;
+		 GLuint uniformDirectionalLightTransform, uniformDirectionalShadowMap,uniformTexture;
 
 		 void CompileShader(const char* vertexCode, const char* fragmentCode);
 		 void AddShader(GLuint* theProgram, const char* shaderCode, GLenum shaderType);
 		 void HandlePointLights();
 		 void HandleSpotLights();
+		 void BindUniformIDs();
 	};
 }
 
