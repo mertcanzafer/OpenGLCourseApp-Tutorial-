@@ -8,12 +8,18 @@ namespace LNS
 	  public:
 		  DirectionalLight();
 		  // Overloaded Constructor
-		  DirectionalLight(GLfloat red, GLfloat green, GLfloat blue, GLfloat aIntensity,
+		  DirectionalLight(GLfloat shadowWidth, GLfloat shadowHeight,
+			  GLfloat red, GLfloat green, GLfloat blue, GLfloat aIntensity,
 			  GLfloat dIntensity, GLfloat xDir, GLfloat yDir, GLfloat zDir);
 
 		  // Function overriding with Inheritance
 		  void UseLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
 			  GLfloat diffuseIntensityLoc, GLfloat directionLoc);
+
+		  glm::mat4 CalcLightTransform();
+
+		  DirectionalLight(const DirectionalLight& copy);
+		  void operator=(const DirectionalLight& copy);
 
 		 virtual ~DirectionalLight();
 	  private:

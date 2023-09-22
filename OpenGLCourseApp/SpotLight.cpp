@@ -54,4 +54,20 @@ void SpotLight::SetFlash
 	direction = dir;
 }
 
+SpotLight::SpotLight(const SpotLight& copy)
+	:PointLight(copy)
+{
+	direction = copy.direction;
+	edge = copy.edge;
+	procEdge = copy.procEdge;
+}
+
+void SpotLight::operator=(const SpotLight& copy)
+{
+	PointLight::operator=(copy);
+	direction = copy.direction;
+	edge = copy.edge;
+	procEdge = copy.procEdge;
+}
+
 SpotLight::~SpotLight(){}

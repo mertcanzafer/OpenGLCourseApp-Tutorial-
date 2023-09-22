@@ -19,6 +19,9 @@ namespace LNS
 
           void UseLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
               GLfloat diffuseIntensityLoc, GLfloat directionLoc){}
+
+          PointLight(const PointLight& copy);
+          void operator=(const PointLight& copy);
           
         virtual ~PointLight();
       protected:

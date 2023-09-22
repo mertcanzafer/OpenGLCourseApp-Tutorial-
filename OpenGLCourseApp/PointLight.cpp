@@ -10,7 +10,7 @@ PointLight::PointLight
     GLfloat aIntensity, GLfloat dIntensity,
     GLfloat xPos, GLfloat yPos, GLfloat zPos,
     GLfloat Constant, GLfloat Linear, GLfloat Exponent
-) :Light(red, green, blue, aIntensity, dIntensity)
+) :Light(1024,1024,red, green, blue, aIntensity, dIntensity)
 {
     position = glm::vec3(xPos, yPos, zPos);
     constant = Constant;
@@ -34,6 +34,24 @@ void PointLight::useLight
     glUniform1f(constantLoc, constant);
     glUniform1f(linearLoc, linear);
     glUniform1f(exponentLoc, exponent);
+}
+
+LNS::PointLight::PointLight(const PointLight& copy)
+    :Light(copy)
+{
+    position = copy.position;
+    constant = copy.constant;
+    linear = copy.linear;
+    exponent = copy.exponent;
+}
+
+void PointLight::operator=(const PointLight& copy)
+{
+    Light::operator=(copy);
+    position = copy.position;
+    constant = copy.constant;
+    linear = copy.linear;
+    exponent = copy.exponent;
 }
 
 PointLight::~PointLight(){}
