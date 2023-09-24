@@ -36,22 +36,4 @@ void PointLight::useLight
     glUniform1f(exponentLoc, exponent);
 }
 
-LNS::PointLight::PointLight(const PointLight& copy)
-    :Light(copy)
-{
-    position = copy.position;
-    constant = copy.constant;
-    linear = copy.linear;
-    exponent = copy.exponent;
-}
-
-void PointLight::operator=(const PointLight& copy)
-{
-    Light::operator=(copy);
-    position = copy.position;
-    constant = copy.constant;
-    linear = copy.linear;
-    exponent = copy.exponent;
-}
-
 PointLight::~PointLight(){}

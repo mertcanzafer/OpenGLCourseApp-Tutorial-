@@ -20,9 +20,6 @@ namespace LNS
           void UseLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
               GLfloat diffuseIntensityLoc, GLfloat directionLoc){}
 
-          PointLight(const PointLight& copy);
-          void operator=(const PointLight& copy);
-          
         virtual ~PointLight();
       protected:
           glm::vec3 position; // position of our light source in 3d world space

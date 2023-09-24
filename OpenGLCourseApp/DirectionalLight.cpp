@@ -38,13 +38,4 @@ glm::mat4 DirectionalLight::CalcLightTransform()
 	return LightProj * glm::lookAt(-direction, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
-DirectionalLight::DirectionalLight(const DirectionalLight& copy)
-	:Light(copy), direction{copy.direction} {}
-
-void DirectionalLight::operator=(const DirectionalLight& copy)
-{
-	Light::operator=(copy);
-	direction = copy.direction;
-}
-
 DirectionalLight::~DirectionalLight(){}

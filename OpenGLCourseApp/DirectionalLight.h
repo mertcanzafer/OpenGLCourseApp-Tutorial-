@@ -18,9 +18,6 @@ namespace LNS
 
 		  glm::mat4 CalcLightTransform();
 
-		  DirectionalLight(const DirectionalLight& copy);
-		  void operator=(const DirectionalLight& copy);
-
 		 virtual ~DirectionalLight();
 	  private:
 		  glm::vec3 direction; //The direction of our light

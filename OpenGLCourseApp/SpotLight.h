@@ -25,9 +25,6 @@ namespace LNS
 
 		   void SetFlash(glm::vec3 pos, glm::vec3 dir);
 
-		   SpotLight(const SpotLight& copy);
-		   void operator=(const SpotLight& copy);
-
 		   virtual ~SpotLight();
 	   private:
 		   // This is the direction the spotlight is actually facing in.
