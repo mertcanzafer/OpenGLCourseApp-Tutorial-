@@ -16,7 +16,7 @@ namespace LNS
 		  void UseLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
 			  GLfloat diffuseIntensityLoc, GLfloat directionLoc);
 
-		  glm::mat4 CalcLightTransform();
+		  glm::mat4 CalcLightTransform()override;
 
 		 virtual ~DirectionalLight();
 	  private:

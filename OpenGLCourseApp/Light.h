@@ -19,6 +19,7 @@ namespace LNS
 
 		  virtual void UseLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
 			  GLfloat diffuseIntensityLoc, GLfloat directionLoc) = 0;
+		  virtual glm::mat4 CalcLightTransform() = 0;
 
 		  Light(const Light& copy);
 		  void operator=(const Light& copy);

@@ -25,6 +25,8 @@ namespace LNS
 
 		   void SetFlash(glm::vec3 pos, glm::vec3 dir);
 
+		   glm::mat4 CalcLightTransform()override{}
+
 		   virtual ~SpotLight();
 	   private:
 		   // This is the direction the spotlight is actually facing in.
