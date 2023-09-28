@@ -322,6 +322,24 @@ void RenderPass(glm::mat4* projectionMatrix,glm::mat4 viewMatrix)
 
 }
 
+void DeallocateMemory()
+{
+	delete mainLight;
+
+	for (auto& m : meshList)
+	{
+		delete m;
+	}
+
+	for (auto& s : shaderList)
+	{
+		delete s;
+	}
+
+	meshList.clear();
+	shaderList.clear();
+}
+
 int main()
 {
 	CreateInstances();
@@ -347,7 +365,6 @@ int main()
 		mainWindow.swapBuffers();
 	}
 
-	delete mainLight;
-
+	DeallocateMemory();
 	return 0;
 }
