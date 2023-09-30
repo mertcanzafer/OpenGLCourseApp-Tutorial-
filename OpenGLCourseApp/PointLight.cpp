@@ -36,4 +36,4 @@ void PointLight::useLight
     glUniform1f(exponentLoc, exponent);
 }
 
-PointLight::~PointLight(){}
+PointLight::~PointLight() {}

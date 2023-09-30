@@ -58,11 +58,11 @@ void Camera::keyControl
   }
   else if (keys[GLFW_KEY_U])
   {
-	  position += worldUp * 0.001f;
+	  position += worldUp * 0.004f;
   }
   else if (keys[GLFW_KEY_K])
   {
-	  position -= worldUp * 0.001f;
+	  position -= worldUp * 0.004f;
   }
 }
 

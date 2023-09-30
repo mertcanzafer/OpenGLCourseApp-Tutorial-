@@ -25,7 +25,7 @@ namespace LNS
 
 		   void SetFlash(glm::vec3 pos, glm::vec3 dir);
 
-		   glm::mat4 CalcLightTransform()override{}
+		   glm::mat4 CalcLightTransform()override { return LightProj; }
 
 		   virtual ~SpotLight();
 	   private:

@@ -50,6 +50,8 @@ unsigned int spotLightCount = 0;
 GLfloat deltaTime{0.0f}; // Delta -> Change!!! deltaTime -> change in time
 GLfloat lastTime{ 0.0f };
 
+GLfloat blaclHawkAngle{ 0.0f };
+
 GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformView{ 0 };
 GLuint uniformEyePosition{ 0 }, uniformSpecularIntensity{ 0 }, uniformShininess{ 0 };
 
@@ -196,9 +198,10 @@ void CreateInstances()
 	BlackHawk = MNS::Model();
 	BlackHawk.LoadModel("Models/uh60.obj");
 		
-	mainLight = new LNS::DirectionalLight(1.0f, 1.0f, 1.0f, 
-		                                 0.3f, 0.6f,
-		                                 0.0f, 0.0f, -1.0f);
+	mainLight = new LNS::DirectionalLight(2048.0f,2048.0f,
+		                                 1.0f, 1.0f, 1.0f, 
+		                                 0.1f, 0.3f,
+		                                 0.0f, -15.0f, -10.0f);
 	
 	pointLight[0] = LNS::PointLight(0.0f, 0.0f, 1.0f,
 		                            0.0f, 0.0f,
@@ -256,15 +259,22 @@ void RenderScene()
 	meshList[2]->RenderMesh();
 
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-6.5f, -2.0f, 15.0f));
-	model = glm::scale(model, glm::vec3(0.01f, 0.01f, 0.01f));
+	model = glm::translate(model, glm::vec3(-6.5f, 2.0f, 15.0f));
+	model = glm::scale(model, glm::vec3(0.006f, 0.006f, 0.006f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	ShinyMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);
 	xWing.RenderModel();
 
+	blaclHawkAngle += 0.1f; //CCW -> CW = - -> +
+	if (blaclHawkAngle > 360.0f)
+	{
+		blaclHawkAngle = 0.1f;
+	}
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-3.0f, 2.0f, 0.0f));
-	model = glm::rotate(model, -90.0f * toRadian, glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, -blaclHawkAngle * toRadian, glm::vec3(0.0f, 1.0f, 0.0f)); // Rotated around y axis
+	model = glm::translate(model, glm::vec3(-8.0f, 2.0f, 4.0f));
+	model = glm::rotate(model, -20.0f * toRadian, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, -90.0f * toRadian, glm::vec3(1.0f, 0.0f, 0.0f)); //Rotated around x axis
 	model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	ShinyMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);
@@ -282,7 +292,9 @@ void DirectionalShadowMapPass(LNS::Light* mlight)
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	uniformModel = directionalShadowShader.GetModelLocation();
-	directionalShadowShader.SetDirectionalLightTransform(&mlight->CalcLightTransform());
+	
+	glm::mat4 ligthTransform = mlight->CalcLightTransform();
+	directionalShadowShader.SetDirectionalLightTransform(&ligthTransform);
 
 	RenderScene();
 
@@ -314,30 +326,18 @@ void RenderPass(glm::mat4* projectionMatrix,glm::mat4 viewMatrix)
 	shaderList[0]->SetDirectionalLight(mainLight);
 	shaderList[0]->SetPointLights(pointLight, pointLightCount);
 	shaderList[0]->SetSpotLights(spotLight, spotLightCount);
-	shaderList[0]->SetDirectionalLightTransform(&mainLight->CalcLightTransform());
+	glm::mat4 ligthTransform = mainLight->CalcLightTransform();
+	shaderList[0]->SetDirectionalLightTransform(&ligthTransform);
+
+	mainLight->GetShadowMap()->Read(GL_TEXTURE1);
+	shaderList[0]->SetTexture(0);
+	shaderList[0]->SetDirectionalShadowMap(1);
 
 	glm::vec3 LowerLight = camera.GetCameraPosition();
 	LowerLight.y -= 0.5f;
 	//spotLight[1].SetFlash(LowerLight, camera.GetCameraDireciton());
 
-}
-
-void DeallocateMemory()
-{
-	delete mainLight;
-
-	for (auto& m : meshList)
-	{
-		delete m;
-	}
-
-	for (auto& s : shaderList)
-	{
-		delete s;
-	}
-
-	meshList.clear();
-	shaderList.clear();
+	RenderScene();
 }
 
 int main()
@@ -361,10 +361,27 @@ int main()
 		camera.keyControl(mainWindow.getKeys(), deltaTime);
 		camera.mouseControl(mainWindow.getXchange(), mainWindow.getYChange());
 
+		DirectionalShadowMapPass(mainLight);
+		RenderPass(&projection,camera.calculateViewMatrix());
+
 		glUseProgram(0);
 		mainWindow.swapBuffers();
 	}
 
-	DeallocateMemory();
+	for (auto& m : meshList)
+	{
+		delete m;
+	}
+
+	for (auto& s : shaderList)
+	{
+		delete s;
+	}
+
+	meshList.clear();
+	shaderList.clear();
+
+	delete mainLight;
+
 	return 0;
 }

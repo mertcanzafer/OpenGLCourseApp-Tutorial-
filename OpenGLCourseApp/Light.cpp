@@ -37,4 +37,4 @@ void LNS::Light::operator=(const Light& copy)
 	LightProj = copy.LightProj;
 }
 
-Light::~Light() { delete shadowMap; }
+Light::~Light() {}

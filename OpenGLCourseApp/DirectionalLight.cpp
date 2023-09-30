@@ -16,7 +16,7 @@ DirectionalLight::DirectionalLight
 	:Light(shadowWidth,shadowHeight,red, green, blue, aIntensity, dIntensity)
 {
 	direction = glm::vec3(xDir, yDir, zDir);
-	LightProj = glm::ortho(-5.0f, 5.0f, -5.0f, 5.0f, 0.1f, 20.0f);
+	LightProj = glm::ortho(-20.0f, 20.0f, -20.0f, 20.0f, 0.1f, 100.0f);
 }
 
 void DirectionalLight::UseLight

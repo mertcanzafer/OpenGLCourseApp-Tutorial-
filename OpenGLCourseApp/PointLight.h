@@ -20,7 +20,7 @@ namespace LNS
           void UseLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
               GLfloat diffuseIntensityLoc, GLfloat directionLoc){}
 
-          glm::mat4 CalcLightTransform()override{}
+          glm::mat4 CalcLightTransform()override { return LightProj; }
 
         virtual ~PointLight();
       protected:
