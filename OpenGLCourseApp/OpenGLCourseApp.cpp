@@ -161,7 +161,10 @@ void CreateObjects()
 	MNS::Mesh* mesh3 = new MNS::Mesh();
 	mesh3->CreateMesh(Vert->FloorVertices, Ind->FloorIndices, numberOfFloorVertices, numberOfFloorIndices);
 	meshList.push_back(mesh3);
-}
+
+	delete Ind; delete Vert;
+	mesh1 = nullptr; mesh2 = nullptr; mesh3 = nullptr;
+} 
 
 void CreateShaders()
 {
