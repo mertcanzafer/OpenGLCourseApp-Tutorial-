@@ -17,10 +17,10 @@ namespace LNS
               GLuint diffuseIntensityLoc, GLuint positionLoc,
               GLuint constantLoc,GLuint linearLoc,GLuint exponentLoc);
 
-          void UseLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
+         virtual void UseLight(GLfloat ambientIntensityLoc, GLfloat ambientColorLoc,
               GLfloat diffuseIntensityLoc, GLfloat directionLoc){}
 
-          glm::mat4 CalcLightTransform()override { return LightProj; }
+          virtual glm::mat4 CalcLightTransform()override { return LightProj; }
 
         virtual ~PointLight();
       protected:
