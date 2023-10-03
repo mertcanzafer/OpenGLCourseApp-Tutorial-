@@ -27,7 +27,7 @@ namespace LNS
 
 		   glm::mat4 CalcLightTransform()override { return LightProj; }
 
-		   virtual ~SpotLight();
+		  ~SpotLight();
 	   private:
 		   // This is the direction the spotlight is actually facing in.
 		   glm::vec3 direction;

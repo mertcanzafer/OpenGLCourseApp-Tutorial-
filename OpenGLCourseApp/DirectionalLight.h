@@ -18,7 +18,7 @@ namespace LNS
 
 		  glm::mat4 CalcLightTransform()override;
 
-		 virtual ~DirectionalLight();
+		  ~DirectionalLight();
 	  private:
 		  glm::vec3 direction; //The direction of our light
 	};
