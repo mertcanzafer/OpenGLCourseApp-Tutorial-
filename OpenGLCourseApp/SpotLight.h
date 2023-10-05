@@ -8,7 +8,9 @@ namespace LNS
 	   public:
 		   SpotLight();
 		   // Overloaded Ctor
-		   SpotLight(GLfloat red, GLfloat green, GLfloat blue,
+		   SpotLight(GLuint shadowWidth, GLuint shadowHeight,
+			   GLfloat near, GLfloat far,
+			   GLfloat red, GLfloat green, GLfloat blue,
 			   GLfloat aIntensity, GLfloat dIntensity,
 			   GLfloat xPos, GLfloat yPos, GLfloat zPos,
 			   GLfloat xDir,GLfloat yDir, GLfloat zDir,
@@ -26,7 +28,7 @@ namespace LNS
 		   void SetFlash(glm::vec3 pos, glm::vec3 dir);
 
 		   glm::mat4 CalcLightTransform()override { return LightProj; }
-
+	
 		  ~SpotLight();
 	   private:
 		   // This is the direction the spotlight is actually facing in.

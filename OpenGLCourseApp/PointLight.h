@@ -1,5 +1,7 @@
 #pragma once
 #include "Light.h"
+#include"OmniShadowMap.h"
+
 namespace LNS 
 {
     class PointLight : public Light
@@ -7,7 +9,9 @@ namespace LNS
       public:
           PointLight();
           // overloaded constructor
-          PointLight(GLfloat red, GLfloat green, GLfloat blue,
+          PointLight(GLuint shadowWidth,GLuint shadowHeight,
+              GLfloat near, GLfloat far,
+              GLfloat red, GLfloat green, GLfloat blue,
               GLfloat aIntensity, GLfloat dIntensity,
               GLfloat xPos, GLfloat yPos, GLfloat zPos,
               GLfloat Constant, GLfloat Linear, GLfloat Exponent);
@@ -21,8 +25,13 @@ namespace LNS
               GLfloat diffuseIntensityLoc, GLfloat directionLoc){}
 
           virtual glm::mat4 CalcLightTransform()override { return LightProj; }
+          
+          // It will return more than one matrix so that we can not inherited one matrix. Create another method returns a vector for each face
+          std::vector<glm::mat4> calcLightTransform();
 
-        virtual ~PointLight();
+          inline GLfloat GetFarPlane() { return farPlane; };
+
+          virtual ~PointLight();
       protected:
           glm::vec3 position; // position of our light source in 3d world space
 
@@ -40,5 +49,7 @@ namespace LNS
           GLfloat constant;
           GLfloat linear;
           GLfloat exponent;
+
+          GLfloat farPlane;
     };
 }

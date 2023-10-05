@@ -6,16 +6,27 @@ PointLight::PointLight():Light(),position{glm::vec3(0.0f,0.0f,0.0f)},
 
 PointLight::PointLight
 (
+    GLuint shadowWidth, GLuint shadowHeight,
+    GLfloat near, GLfloat far,
     GLfloat red, GLfloat green, GLfloat blue,
     GLfloat aIntensity, GLfloat dIntensity,
     GLfloat xPos, GLfloat yPos, GLfloat zPos,
     GLfloat Constant, GLfloat Linear, GLfloat Exponent
-) :Light(1024,1024,red, green, blue, aIntensity, dIntensity)
+) :Light(shadowWidth,shadowHeight,red, green, blue, aIntensity, dIntensity)
 {
     position = glm::vec3(xPos, yPos, zPos);
     constant = Constant;
     linear = Linear;
     exponent = Exponent;
+    farPlane = far;
+
+    float aspect = static_cast<float>(shadowWidth) / static_cast<float>(shadowHeight);
+    LightProj = glm::perspective(glm::radians(90.0f), aspect, near, farPlane);
+
+    delete shadowMap;
+
+    shadowMap = new SMN::OmniShadowMap();
+    shadowMap->Init(shadowWidth, shadowHeight);
 }
 
 void PointLight::useLight
@@ -34,6 +45,22 @@ void PointLight::useLight
     glUniform1f(constantLoc, constant);
     glUniform1f(linearLoc, linear);
     glUniform1f(exponentLoc, exponent);
+}
+
+std::vector<glm::mat4> PointLight::calcLightTransform()
+{
+    std::vector<glm::mat4> lightMatrices;
+    // +x -x
+    lightMatrices.emplace_back(LightProj * glm::lookAt(position, position + glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+    lightMatrices.emplace_back(LightProj * glm::lookAt(position, position + glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+    // +y -y
+    lightMatrices.emplace_back(LightProj * glm::lookAt(position, position + glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+    lightMatrices.emplace_back(LightProj * glm::lookAt(position, position + glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+    // +z -z
+    lightMatrices.emplace_back(LightProj * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+    lightMatrices.emplace_back(LightProj * glm::lookAt(position, position + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+     
+    return lightMatrices;
 }
 
 PointLight::~PointLight() {}

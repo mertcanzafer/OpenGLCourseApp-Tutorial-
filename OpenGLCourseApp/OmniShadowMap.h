@@ -13,6 +13,6 @@ namespace SMN
 		   void Write()override;
 		   void Read(GLenum textureUnit)override;
 
-		   ~OmniShadowMap();
+		   ~OmniShadowMap() = default;
 	};
 }

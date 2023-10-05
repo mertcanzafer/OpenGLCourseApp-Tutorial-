@@ -347,7 +347,7 @@ int main()
 {
 	CreateInstances();
 	// Create the perspective projection outside the main loop
-	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (GLfloat)mainWindow.GetbufferWidth() / (GLfloat)mainWindow.GetbufferHeight(), 0.1f, 150.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(60.0f), (GLfloat)mainWindow.GetbufferWidth() / (GLfloat)mainWindow.GetbufferHeight(), 0.1f, 150.0f);
 
 	// Loop until window closed.
 	while (!mainWindow.getShouldClose())

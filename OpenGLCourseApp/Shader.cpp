@@ -42,6 +42,22 @@ void Shader::CreateFromFiles
 
 }
 
+void Shader:: CreateFromFiles
+(
+	const char* vertexLocation, const char* fragmentLocation, const char* geometryLocation
+)
+{
+	std::string vertexString = ReadFile(vertexLocation);
+	std::string fragmentString = ReadFile(fragmentLocation);
+	std::string geometryString = ReadFile(geometryLocation);
+
+	const char* vertexCode = vertexString.c_str();
+	const char* fragmentCode = fragmentString.c_str();
+	const char* geometryCode = geometryString.c_str();
+
+	CompileShader(vertexCode, fragmentCode, geometryCode);
+}
+
 void Shader::CreateFromString
 (
 	const char* vertexCode, const char* fragmentCode
@@ -65,6 +81,30 @@ void Shader::CompileShader
 	AddShader(&shaderID, vertexCode, GL_VERTEX_SHADER);
 	AddShader(&shaderID, fragmentCode, GL_FRAGMENT_SHADER);
 
+	BindUniformIDs();
+}
+
+void Shader::CompileShader
+(
+	const char* vertexCode, const char* fragmentCode, const char* geometryCode
+)
+{
+	shaderID = glCreateProgram();
+
+	if (!shaderID)
+	{
+		std::cout << "Error creating shader program" << std::endl;
+		return;
+	}
+	AddShader(&shaderID, vertexCode, GL_VERTEX_SHADER);
+	AddShader(&shaderID, fragmentCode, GL_FRAGMENT_SHADER);
+	AddShader(&shaderID, geometryCode, GL_GEOMETRY_SHADER);
+
+	BindUniformIDs();
+}
+
+void Shader::BindUniformIDs()
+{
 	GLint result = 0;
 	GLchar elog[1024] = { 0 };
 
@@ -88,11 +128,6 @@ void Shader::CompileShader
 		return;
 	}
 
-	BindUniformIDs();
-}
-
-void Shader::BindUniformIDs()
-{
 	uniformModel = glGetUniformLocation(shaderID, "model");
 	uniformProjection = glGetUniformLocation(shaderID, "projection");
 	uniformView = glGetUniformLocation(shaderID, "view");
@@ -113,6 +148,21 @@ void Shader::BindUniformIDs()
 	uniformTexture = glGetUniformLocation(shaderID, "theTexture");
 	uniformDirectionalLightTransform = glGetUniformLocation(shaderID, "directionalLightTransform");
 	uniformDirectionalShadowMap = glGetUniformLocation(shaderID, "directionalShadowMap");
+
+	uniformOmniLightPos = glGetUniformLocation(shaderID, "ligthPos");
+	uniformFarPlane = glGetUniformLocation(shaderID, "farPlane");
+	HandleCubeMapFaces();
+}
+
+void Shader::HandleCubeMapFaces()
+{
+	for (size_t i = 0; i < NUM_OF_FACES; ++i)
+	{
+		char locBuff[50] = { '\0' };
+
+		snprintf(locBuff, sizeof(locBuff), "ligthMatrices[%d]", i);
+		uniformLightMatrices[i] = glGetUniformLocation(shaderID, locBuff);
+	}
 }
 
 void Shader::HandlePointLights()
@@ -274,6 +324,14 @@ void Shader::SetSpotLights
 	}
 }
 
+void Shader::setLightMatrices(std::vector<glm::mat4> lightMatrices)
+{
+	for (size_t i = 0; i < NUM_OF_FACES; i++)
+	{
+		glUniformMatrix4fv(uniformLightMatrices[i], 1, GL_FALSE, glm::value_ptr(lightMatrices[i]));
+	}
+}
+
 void Shader::UseShader()
 {
 	glUseProgram(shaderID);
@@ -300,13 +358,15 @@ Shader::~Shader()
 }
 
 // Getters
-GLuint Shader::GetModelLocation() { return uniformModel; }
-GLuint Shader::GetProjectionLocation() { return uniformProjection; }
-GLuint Shader::GetViewLocation() { return uniformView; }
-GLuint Shader::GetAmbientIntensityLocation() { return uniformDirectionalLight.uniformAmbientIntensity; }
-GLuint Shader::GetAmbientColourLocation() { return uniformDirectionalLight.uniformColour; }
-GLuint Shader::GetDirectionLocation() { return uniformDirectionalLight.uniformDirection; }
-GLuint Shader::GetDiffuseIntensityLocation() { return uniformDirectionalLight.uniformDiffuseIntensity; }
-GLuint Shader::GetShininessLocation() { return uniformShininess; }
-GLuint Shader::GetSpecularIntensityLocation() { return uniformSpecularIntensity; }
-GLuint Shader::GetEyePositionLocation() { return unformEyePosition; }
+inline GLuint Shader::GetModelLocation() const{ return uniformModel; }
+inline GLuint Shader::GetProjectionLocation()const { return uniformProjection; }
+inline GLuint Shader::GetViewLocation()const { return uniformView; }
+inline GLuint Shader::GetAmbientIntensityLocation()const { return uniformDirectionalLight.uniformAmbientIntensity; }
+inline GLuint Shader::GetAmbientColourLocation()const { return uniformDirectionalLight.uniformColour; }
+inline GLuint Shader::GetDirectionLocation()const { return uniformDirectionalLight.uniformDirection; }
+inline GLuint Shader::GetDiffuseIntensityLocation()const { return uniformDirectionalLight.uniformDiffuseIntensity; }
+inline GLuint Shader::GetShininessLocation()const { return uniformShininess; }
+inline GLuint Shader::GetSpecularIntensityLocation()const { return uniformSpecularIntensity; }
+inline GLuint Shader::GetEyePositionLocation()const { return unformEyePosition; }
+inline GLuint Shader::GetFarPlaneLoc()const { return uniformFarPlane; }
+inline GLuint Shader::GetOmniLightPos()const { return uniformOmniLightPos; }
