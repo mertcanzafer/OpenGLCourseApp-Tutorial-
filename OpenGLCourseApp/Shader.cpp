@@ -357,16 +357,3 @@ Shader::~Shader()
 	ClearShader();
 }
 
-// Getters
-inline GLuint Shader::GetModelLocation() const{ return uniformModel; }
-inline GLuint Shader::GetProjectionLocation()const { return uniformProjection; }
-inline GLuint Shader::GetViewLocation()const { return uniformView; }
-inline GLuint Shader::GetAmbientIntensityLocation()const { return uniformDirectionalLight.uniformAmbientIntensity; }
-inline GLuint Shader::GetAmbientColourLocation()const { return uniformDirectionalLight.uniformColour; }
-inline GLuint Shader::GetDirectionLocation()const { return uniformDirectionalLight.uniformDirection; }
-inline GLuint Shader::GetDiffuseIntensityLocation()const { return uniformDirectionalLight.uniformDiffuseIntensity; }
-inline GLuint Shader::GetShininessLocation()const { return uniformShininess; }
-inline GLuint Shader::GetSpecularIntensityLocation()const { return uniformSpecularIntensity; }
-inline GLuint Shader::GetEyePositionLocation()const { return unformEyePosition; }
-inline GLuint Shader::GetFarPlaneLoc()const { return uniformFarPlane; }
-inline GLuint Shader::GetOmniLightPos()const { return uniformOmniLightPos; }

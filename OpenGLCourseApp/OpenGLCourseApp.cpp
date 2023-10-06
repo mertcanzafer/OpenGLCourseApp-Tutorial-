@@ -4,6 +4,7 @@
 #include <cstring>
 #include <cmath>
 #include<vector>
+#include <windows.h>
 
 #include <Gl\glew.h>
 #include<GLFW\glfw3.h>
@@ -23,12 +24,18 @@
 #include "Material.h"
 #include "Model.h"
 
+// This program is forced to run on NVIDIA Graphics Card!!!!!!!
+extern "C" {
+	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
+}
+
 const float toRadian{ 0.0174532925 };
 
 WNS::Window mainWindow; // Our simply window object
 std::vector<MNS::Mesh*> meshList; // The vector list that holds mesh objects
 std::vector<SNS::Shader*> shaderList; // The vector list that holds shader objects
 SNS::Shader directionalShadowShader; // Separate ShadowMapShader object
+SNS::Shader omniShadowShader;	// Omni ShadowMap shader 
 CNS::Camera camera; // Our simply camera object
 
 TNS::Texture brickTexture; // Brick texture object
@@ -54,6 +61,7 @@ GLfloat blaclHawkAngle{ 0.0f };
 
 GLuint uniformModel{ 0 }, uniformProjection{ 0 }, uniformView{ 0 };
 GLuint uniformEyePosition{ 0 }, uniformSpecularIntensity{ 0 }, uniformShininess{ 0 };
+GLuint uniformOmniLightPos{ 0 }, uniformFarPlane{ 0 };
 
 // Vertex shaders
 static const char* vShader = "Shaders/shader.vert.txt";
@@ -175,6 +183,10 @@ void CreateShaders()
 	directionalShadowShader = SNS::Shader();
 	directionalShadowShader.CreateFromFiles("Shaders/directional_shadow_map.vert.txt",
 		"Shaders/directional_shadow_map.frag.txt");
+
+	omniShadowShader = SNS::Shader();
+	omniShadowShader.CreateFromFiles("Shaders/omni_shadow_map.vert.txt", "Shaders/omni_shadow_map.frag.txt",
+		"Shaders/omni_shadow_map.geom.txt");
 }
 
 void CreateInstances()
@@ -206,19 +218,25 @@ void CreateInstances()
 		                                 0.1f, 0.3f,
 		                                 0.0f, -15.0f, -10.0f);
 	
-	pointLight[0] = LNS::PointLight(0.0f, 0.0f, 1.0f,
+	pointLight[0] = LNS::PointLight( 1024,1024,
+		                            0.01f,100.0f,
+		                            0.0f, 0.0f, 1.0f,
 		                            0.0f, 0.0f,
 		                            0.0f, 0.0f, 0.0f,
 		                            0.3f, 0.2f, 0.1f);
 	pointLightCount++;
 
-	pointLight[1] = LNS::PointLight(0.0f, 1.0f, 0.0f,
+	pointLight[1] = LNS::PointLight(1024, 1024,
+		                            0.01f, 100.0f,
+		                            0.0f, 1.0f, 0.0f,
 		                            0.0f, 0.0f,
 		                           -4.0f, 2.0f, 0.0f,
 		                           0.3f, 0.1f, 0.1f);
    pointLightCount++;
 
-   spotLight[0] = LNS::SpotLight(1.0f, 1.0f, 1.0f,
+   spotLight[0] = LNS::SpotLight(1024, 1024,
+							     0.01f, 100.0f,
+	                             1.0f, 1.0f, 1.0f,
 	                             0.0f, 1.0f,
 	                             0.0f, 0.0f, 0.0f,
 	                             0.0f, -1.0f, 0.0f,
@@ -226,7 +244,9 @@ void CreateInstances()
 	                             20.0f);
    spotLightCount++;
 
-   spotLight[1] = LNS::SpotLight(1.0f, 1.0f, 1.0f,
+   spotLight[1] = LNS::SpotLight(1024, 1024,
+								 0.01f, 100.0f,
+							     1.0f, 1.0f, 1.0f,
 	                             0.0f, 2.0f,
 	                             0.0f, -0.5f, 0.0f,
 	                            -2.5f, -1.0f, 0.0f,
@@ -268,10 +288,10 @@ void RenderScene()
 	ShinyMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);
 	xWing.RenderModel();
 
-	blaclHawkAngle += 0.1f; //CCW -> CW = - -> +
+	blaclHawkAngle += 0.06f; //CCW -> CW = - -> +
 	if (blaclHawkAngle > 360.0f)
 	{
-		blaclHawkAngle = 0.1f;
+		blaclHawkAngle = 0.06f;
 	}
 	model = glm::mat4(1.0f);
 	model = glm::rotate(model, -blaclHawkAngle * toRadian, glm::vec3(0.0f, 1.0f, 0.0f)); // Rotated around y axis
@@ -301,6 +321,28 @@ void DirectionalShadowMapPass(LNS::Light* mlight)
 
 	RenderScene();
 
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void OmniShadowMapPass(LNS::PointLight* plight)
+{
+	omniShadowShader.UseShader();
+
+	glViewport(0, 0, plight->GetShadowMap()->GetShadowWidth(), plight->GetShadowMap()->GetShadowHeight());
+
+	plight->GetShadowMap()->Write();
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	uniformModel = omniShadowShader.GetModelLocation();
+	uniformOmniLightPos = omniShadowShader.GetOmniLightPos();
+	uniformFarPlane = omniShadowShader.GetFarPlaneLoc();
+
+	glUniform3f(uniformOmniLightPos, plight->GetPosition().x, plight->GetPosition().y, plight->GetPosition().z);
+	glUniform1f(uniformFarPlane, plight->GetFarPlane()); 
+
+	omniShadowShader.setLightMatrices(plight->calcLightTransform());
+
+	RenderScene();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -365,6 +407,16 @@ int main()
 		camera.mouseControl(mainWindow.getXchange(), mainWindow.getYChange());
 
 		DirectionalShadowMapPass(mainLight);
+		
+		for (size_t i{ 0 }; i < pointLightCount; i++)
+		{
+			OmniShadowMapPass(&pointLight[i]);
+		}
+		for (size_t i{ 0 }; i < spotLightCount; i++)
+		{
+			OmniShadowMapPass(&spotLight[i]);
+		}
+
 		RenderPass(&projection,camera.calculateViewMatrix());
 
 		glUseProgram(0);

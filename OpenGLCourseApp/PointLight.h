@@ -29,7 +29,8 @@ namespace LNS
           // It will return more than one matrix so that we can not inherited one matrix. Create another method returns a vector for each face
           std::vector<glm::mat4> calcLightTransform();
 
-          inline GLfloat GetFarPlane() { return farPlane; };
+          inline GLfloat GetFarPlane()const { return farPlane; };
+          inline glm::vec3 GetPosition()const { return position; }
 
           virtual ~PointLight();
       protected:

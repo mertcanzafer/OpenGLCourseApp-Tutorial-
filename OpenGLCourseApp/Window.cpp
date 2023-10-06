@@ -93,6 +93,8 @@ int Window::Initialise()
 	glViewport(0, 0, bufferWidth, bufferHeight);
 
 	glfwSetWindowUserPointer(MainWindow, this);
+	// Disable vsync 
+	glfwSwapInterval(0);
 }
 
 void Window::FPSCounter()

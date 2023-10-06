@@ -29,18 +29,18 @@ namespace SNS
 
 		 std::string ReadFile(const char* filePath);
 		 // Getters
-		 inline GLuint GetProjectionLocation()const;
-		 inline GLuint GetModelLocation()const;
-		 inline GLuint GetViewLocation()const;
-		 inline GLuint GetAmbientIntensityLocation()const;
-		 inline GLuint GetAmbientColourLocation()const;
-		 inline GLuint GetDiffuseIntensityLocation()const;
-		 inline GLuint GetDirectionLocation()const;
-		 inline GLuint GetSpecularIntensityLocation()const;
-		 inline GLuint GetShininessLocation()const;
-		 inline GLuint GetEyePositionLocation()const;
-		 inline GLuint GetOmniLightPos()const;
-		 inline GLuint GetFarPlaneLoc()const;
+		inline GLuint GetModelLocation() const { return uniformModel; }
+		inline GLuint GetProjectionLocation()const { return uniformProjection; }
+		inline GLuint GetViewLocation()const { return uniformView; }
+		inline GLuint GetAmbientIntensityLocation()const { return uniformDirectionalLight.uniformAmbientIntensity; }
+		inline GLuint GetAmbientColourLocation()const { return uniformDirectionalLight.uniformColour; }
+	    inline GLuint GetDirectionLocation()const { return uniformDirectionalLight.uniformDirection; }
+	    inline GLuint GetDiffuseIntensityLocation()const { return uniformDirectionalLight.uniformDiffuseIntensity; }
+	    inline GLuint GetShininessLocation()const { return uniformShininess; }
+	    inline GLuint GetSpecularIntensityLocation()const { return uniformSpecularIntensity; }
+	    inline GLuint GetEyePositionLocation()const { return unformEyePosition; }
+	    inline GLuint GetFarPlaneLoc()const { return uniformFarPlane; }
+	    inline GLuint GetOmniLightPos()const { return uniformOmniLightPos; }
 
 		 void SetDirectionalLight(LNS::Light* mLight);
 		 void SetPointLights(LNS::PointLight* pLight,unsigned int LightCount);
