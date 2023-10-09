@@ -26,6 +26,7 @@ namespace SNS
 		 void CreateFromFiles(const char* vertexLocation, const char* fragmentLocation);
 		 // Overload the create from files function to include geomShader
 		 void CreateFromFiles(const char* vertexLocation, const char* fragmentLocation,const char* geometryLocation);
+		 void Validate();
 
 		 std::string ReadFile(const char* filePath);
 		 // Getters
@@ -43,8 +44,8 @@ namespace SNS
 	    inline GLuint GetOmniLightPos()const { return uniformOmniLightPos; }
 
 		 void SetDirectionalLight(LNS::Light* mLight);
-		 void SetPointLights(LNS::PointLight* pLight,unsigned int LightCount);
-		 void SetSpotLights(LNS::SpotLight* sLight, unsigned int sLightCount);
+		 void SetPointLights(LNS::PointLight* pLight,unsigned int LightCount,unsigned int offset,unsigned int textureUnit);
+		 void SetSpotLights(LNS::SpotLight* sLight, unsigned int sLightCount,unsigned int offset,unsigned int textureUnit);
 		 void SetTexture(GLuint textureUnit);
 		 void SetDirectionalShadowMap(GLuint textureUnit);
 		 void SetDirectionalLightTransform(glm::mat4* lTransform); 
@@ -98,6 +99,13 @@ namespace SNS
 
 		  }uniformSpotLight[MAX_SPOT_LIGHTS];
 
+		  struct 
+		  {
+			  GLuint shadowMap;
+			  GLuint farPlane;
+		  }uniformOmniShadowMap[MAX_SPOT_LIGHTS + MAX_POINT_LIGHTS];
+
+
 		  /*
 		    UniformModel: An uniform value how much moved coordinates along the x axis.
 			UniformProjection: The variable that holds id and location for projection in vertex shader.
@@ -118,6 +126,7 @@ namespace SNS
 		 void HandlePointLights();
 		 void HandleSpotLights();
 		 void HandleCubeMapFaces();
+		 void HandleOmniShadowMaps();
 		 void BindUniformIDs();
 	};
 }

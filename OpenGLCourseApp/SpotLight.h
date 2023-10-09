@@ -28,6 +28,7 @@ namespace LNS
 		   void SetFlash(glm::vec3 pos, glm::vec3 dir);
 
 		   glm::mat4 CalcLightTransform()override { return LightProj; }
+		   inline void Toggle() { isOn = !isOn; }
 	
 		  ~SpotLight();
 	   private:
@@ -35,5 +36,7 @@ namespace LNS
 		   glm::vec3 direction;
 
 		   GLfloat edge,procEdge;
+	
+		   bool isOn;
 	};
 }

@@ -215,22 +215,22 @@ void CreateInstances()
 		
 	mainLight = new LNS::DirectionalLight(2048.0f,2048.0f,
 		                                 1.0f, 1.0f, 1.0f, 
-		                                 0.1f, 0.3f,
+		                                 0.0f, 0.1f,
 		                                 0.0f, -15.0f, -10.0f);
 	
 	pointLight[0] = LNS::PointLight( 1024,1024,
 		                            0.01f,100.0f,
 		                            0.0f, 0.0f, 1.0f,
-		                            0.0f, 0.0f,
-		                            0.0f, 0.0f, 0.0f,
-		                            0.3f, 0.2f, 0.1f);
+		                            0.0f, 1.0f,
+		                            1.0f, 3.0f, 0.0f,
+		                            0.3f, 0.1f, 0.1f);
 	pointLightCount++;
 
 	pointLight[1] = LNS::PointLight(1024, 1024,
 		                            0.01f, 100.0f,
 		                            0.0f, 1.0f, 0.0f,
 		                            0.0f, 0.0f,
-		                           -4.0f, 2.0f, 0.0f,
+		                           -4.0f, 3.0f, 0.0f,
 		                           0.3f, 0.1f, 0.1f);
    pointLightCount++;
 
@@ -282,7 +282,7 @@ void RenderScene()
 	meshList[2]->RenderMesh();
 
 	model = glm::mat4(1.0f);
-	model = glm::translate(model, glm::vec3(-6.5f, 2.0f, 15.0f));
+	model = glm::translate(model, glm::vec3(-6.5f, 0.5f, 10.0f));
 	model = glm::scale(model, glm::vec3(0.006f, 0.006f, 0.006f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	ShinyMaterial.useMaterial(uniformSpecularIntensity, uniformShininess);
@@ -319,6 +319,7 @@ void DirectionalShadowMapPass(LNS::Light* mlight)
 	glm::mat4 ligthTransform = mlight->CalcLightTransform();
 	directionalShadowShader.SetDirectionalLightTransform(&ligthTransform);
 
+	directionalShadowShader.Validate();
 	RenderScene();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -341,6 +342,8 @@ void OmniShadowMapPass(LNS::PointLight* plight)
 	glUniform1f(uniformFarPlane, plight->GetFarPlane()); 
 
 	omniShadowShader.setLightMatrices(plight->calcLightTransform());
+
+	omniShadowShader.Validate();	
 
 	RenderScene();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -369,18 +372,20 @@ void RenderPass(glm::mat4* projectionMatrix,glm::mat4 viewMatrix)
 		camera.GetCameraPosition().y, camera.GetCameraPosition().z);
 
 	shaderList[0]->SetDirectionalLight(mainLight);
-	shaderList[0]->SetPointLights(pointLight, pointLightCount);
-	shaderList[0]->SetSpotLights(spotLight, spotLightCount);
+	shaderList[0]->SetPointLights(pointLight, pointLightCount,0,3);
+	shaderList[0]->SetSpotLights(spotLight, spotLightCount,pointLightCount,3 + pointLightCount);
 	glm::mat4 ligthTransform = mainLight->CalcLightTransform();
 	shaderList[0]->SetDirectionalLightTransform(&ligthTransform);
 
-	mainLight->GetShadowMap()->Read(GL_TEXTURE1);
-	shaderList[0]->SetTexture(0);
-	shaderList[0]->SetDirectionalShadowMap(1);
+	mainLight->GetShadowMap()->Read(GL_TEXTURE2);
+	shaderList[0]->SetTexture(1);
+	shaderList[0]->SetDirectionalShadowMap(2);
 
 	glm::vec3 LowerLight = camera.GetCameraPosition();
 	LowerLight.y -= 0.5f;
-	//spotLight[1].SetFlash(LowerLight, camera.GetCameraDireciton());
+	spotLight[1].SetFlash(LowerLight, camera.GetCameraDireciton());
+
+	shaderList[0]->Validate();
 
 	RenderScene();
 }
@@ -405,6 +410,12 @@ int main()
 
 		camera.keyControl(mainWindow.getKeys(), deltaTime);
 		camera.mouseControl(mainWindow.getXchange(), mainWindow.getYChange());
+
+		if (mainWindow.getKeys()[GLFW_KEY_L])
+		{
+			spotLight[1].Toggle();
+			mainWindow.getKeys()[GLFW_KEY_L] = false;
+		}
 
 		DirectionalShadowMapPass(mainLight);
 		
