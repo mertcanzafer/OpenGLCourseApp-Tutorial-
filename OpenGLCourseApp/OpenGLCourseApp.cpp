@@ -24,6 +24,8 @@
 #include "Material.h"
 #include "Model.h"
 
+#include "Skybox.h"
+
 // This program is forced to run on NVIDIA Graphics Card!!!!!!!
 extern "C" {
 	__declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;
@@ -51,6 +53,9 @@ MNS::Model BlackHawk;// Armed helicopter
 LNS::Light *mainLight; // Light object
 LNS::PointLight pointLight[MAX_POINT_LIGHTS];
 LNS::SpotLight spotLight[MAX_SPOT_LIGHTS];
+
+SKNS::Skybox skybox;
+
 unsigned int pointLightCount = 0;
 unsigned int spotLightCount = 0;
 
@@ -215,8 +220,8 @@ void CreateInstances()
 		
 	mainLight = new LNS::DirectionalLight(2048.0f,2048.0f,
 		                                 1.0f, 1.0f, 1.0f, 
-		                                 0.0f, 0.1f,
-		                                 0.0f, -15.0f, -10.0f);
+		                                 0.1f, 0.8f,
+		                                 -8.0f, -8.0f, -4.0f);
 	
 	pointLight[0] = LNS::PointLight( 1024,1024,
 		                            0.01f,100.0f,
@@ -253,6 +258,17 @@ void CreateInstances()
 	                             1.0f, 0.0f, 0.0f,
 	                             15.0f);
    spotLightCount++;
+
+   std::vector<std::string> skyboxFaces;
+
+   skyboxFaces.push_back("Textures/skybox/posx.jpg");
+   skyboxFaces.push_back("Textures/skybox/negx.jpg");
+   skyboxFaces.push_back("Textures/skybox/posy.jpg");
+   skyboxFaces.push_back("Textures/skybox/negy.jpg");
+   skyboxFaces.push_back("Textures/skybox/posz.jpg");
+   skyboxFaces.push_back("Textures/skybox/negz.jpg");
+
+   skybox = SKNS::Skybox(skyboxFaces);
 }
 
 void RenderScene()
@@ -351,6 +367,14 @@ void OmniShadowMapPass(LNS::PointLight* plight)
 
 void RenderPass(glm::mat4* projectionMatrix,glm::mat4 viewMatrix)
 {
+	glViewport(0, 0, 1366, 768);
+
+	// Clear Window
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	skybox.DrawSkybox(viewMatrix, *projectionMatrix);
+
 	shaderList[0]->UseShader();
 
 	uniformModel = shaderList[0]->GetModelLocation();
@@ -359,12 +383,6 @@ void RenderPass(glm::mat4* projectionMatrix,glm::mat4 viewMatrix)
 	uniformEyePosition = shaderList[0]->GetEyePositionLocation();
 	uniformShininess = shaderList[0]->GetShininessLocation();
 	uniformSpecularIntensity = shaderList[0]->GetSpecularIntensityLocation();
-
-	glViewport(0, 0, 1366, 768);
-	
-	// Clear Window
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(*projectionMatrix));
 	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
